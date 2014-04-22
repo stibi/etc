@@ -1,7 +1,41 @@
 {
-	"color_scheme": "Packages/Color Scheme - Default/Monokai.tmTheme",
+    // Colors
+	"color_scheme": "Packages/Tomorrow Color Schemes/Tomorrow-Night-Eighties.tmTheme",
+	"theme": "Soda Dark.sublime-theme",
+
+	// Font
+	"font_face": "Ubuntu Mono",
+	"font_options": ["subpixel_antialias", "no_bold"],
+	"font_size": 13.0,
+
+	// Editor view look-and-feel
 	"draw_white_space": "all",
+	"show_full_path": true,
+	"highlight_line": true,
+
+	// Editor behavior
+	"highlight_modified_tabs": true,
 	"find_selected_text": true,
+	"save_on_focus_lost": true,
+
+    // Word wrapping
+    //"rulers": [ 72, 79 ],
+    "word_wrap": true,
+    "wrap_width": 120,
+
+    // Whitespace - no tabs, trimming, end files with \n
+    "tab_size": 4,
+    "translate_tabs_to_spaces": true,
+    "trim_trailing_white_space_on_save": true,
+    "ensure_newline_at_eof_on_save": true,
+
+    // Sidebar - exclude distracting files and folders
+    "file_exclude_patterns":
+    [
+        ".DS_Store",
+        "*.pid",
+        "*.pyc"
+    ],
 	"folder_exclude_patterns":
 	[
 		".svn",
@@ -11,20 +45,15 @@
 		"_build",
 		"dist",
 		"build",
-		"site"
+		"site",
+		"__pycache__",
+        "env",
+        "env3"
 	],
-	"font_face": "Ubuntu Mono",
-	"font_options":
-	[
-		"subpixel_antialias"
-	],
-	"font_size": 12.0,
-	"highlight_line": true,
+
 	"ignored_packages":
 	[
-		"Vintage"
-	],
-	"theme": "Soda Dark.sublime-theme",
-	"translate_tabs_to_spaces": true,
-	"trim_trailing_white_space_on_save": true
+		"Vintage",
+		"Markdown"
+	]
 }

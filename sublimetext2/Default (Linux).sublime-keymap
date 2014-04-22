@@ -1,0 +1,13 @@
+[
+    { "keys": ["ctrl+d"], "command": "run_macro_file", "args": {
+        "file": "Packages/Default/Delete Line.sublime-macro"}},
+
+    // Rebind "go to file" to cmd+shift+O
+    { "keys": ["super+shift+o"], "command": "show_overlay", "args": {
+        "overlay": "goto",
+        "show_files": true
+    }},
+
+    // Reindent selection with cmd+alt+L
+    { "keys": ["super+alt+l"], "command": "reindent"}
+]
