@@ -11,6 +11,18 @@ ZSH_THEME="stibi"
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
+alias p="ping www.google.com"
+alias g="grep"
+alias gi="grep -i"
+alias beat="mplayer -playlist beat128.ogg.m3u"
+alias svim="sudo vim"
+alias reload="source ~/.zshrc"
+alias vvpn="sudo openvpn ~/vendavo.ovpn"
+alias vihosts="sudo vim /etc/hosts"
+
+alias pacman="sudo pacman"
+#alias yaourt="sudo yaourt"
+
 # Set to this to use case-sensitive completion
 # CASE_SENSITIVE="true"
 
@@ -51,7 +63,10 @@ source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
-export PATH="/home/stibi/.rvm/gems/ruby-1.9.2-p320/bin:/home/stibi/.rvm/gems/ruby-1.9.2-p320@global/bin:/home/stibi/.rvm/rubies/ruby-1.9.2-p320/bin:/home/stibi/.rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/opt/android-sdk/build-tools/19/:/opt/android-sdk/platform-tools:/opt/android-sdk/tools:/opt/java6/bin:/opt/java6/db/bin:/opt/java6/jre/bin:/usr/bin/core_perl:$ORACLE_HOME/bin"
+# BACKUP - tohle tehdy fixlo problem s chefem & vagrant & vendavo oracle box buildem
+#export PATH="/home/stibi/.rvm/gems/ruby-1.9.2-p320/bin:/home/stibi/.rvm/gems/ruby-1.9.2-p320@global/bin:/home/stibi/.rvm/rubies/ruby-1.9.2-p320/bin:/home/stibi/.rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/opt/android-sdk/build-tools/19/:/opt/android-sdk/platform-tools:/opt/android-sdk/tools:/opt/java6/bin:/opt/java6/db/bin:/opt/java6/jre/bin:/usr/bin/core_perl:$ORACLE_HOME/bin:/home/stibi/bin"
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/bin:/opt/android-sdk/build-tools/19/:/opt/android-sdk/platform-tools:/opt/android-sdk/tools:/opt/java6/bin:/opt/java6/db/bin:/opt/java6/jre/bin:/usr/bin/core_perl:$ORACLE_HOME/bin:/home/stibi/bin"
+
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # # Preferred editor for local and remote sessions
@@ -61,9 +76,19 @@ export PATH="/home/stibi/.rvm/gems/ruby-1.9.2-p320/bin:/home/stibi/.rvm/gems/rub
 #   export EDITOR='mvim'
 # fi
 
+export EDITOR='vim'
+
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
 
 # ssh
 # export SSH_KEY_PATH="~/.ssh/dsa_id"
 
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
+
+# Presunuto do /etc/profile
+#eval $(ssh-agent)
+#source ~/.keychain/mek-sh
+. ~/bin/agent-startup.sh
+
+eval `dircolors /etc/dir_colors`
