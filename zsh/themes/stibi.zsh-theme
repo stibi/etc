@@ -5,12 +5,12 @@
 #}
 
 function get_free_memory {
-  MY_FREE_RAM=`free -m | awk '{if (NR==3) print $4}' | xargs -i echo 'scale=1;{}/1000' | bc`
+  MY_FREE_RAM=`free -m | awk '{if (NR==3) print $4}' | xargs -i echo 'scale=1;{}/1000' | bc`"G"
 }
 
 function get_cpu_load() {
   #uptime | awk '{print $11}' | tr ',' ' '
-  MY_CPU_LOAD=`uptime | awk '{print $11}' | tr -d ','`
+  MY_CPU_LOAD=`uptime | awk '{print $10}' | tr -d ','`
 }
 
 function get_average_cpu_temp() {
@@ -129,7 +129,7 @@ function myprecmd() {
     #freeram=$(get_free_RAM)
     #currentload=$(get_load)
     # asi zatim netreba: freeramsize=${#${(S%%)freeram//$~zero/}}
-    sysinfosize=${#${(%):-[ $MY_FREE_RAM, $MY_CPU_LOAD, $MY_AVERAGE_CPU_TEMP ] }}
+    sysinfosize=${#${(%):-$MY_FREE_RAM $MY_CPU_LOAD $MY_AVERAGE_CPU_TEMP      }}
 
 
     get_gitpromptlen
@@ -180,7 +180,7 @@ setprompt() {
     ZSH_THEME_GIT_PROMPT_SUFFIX="]%{$reset_color%}"
     ZSH_THEME_GIT_PROMPT_DIRTY="%{$FG[001]%} %{$reset_color%}%{$FG[208]%}"
     #ZSH_THEME_GIT_PROMPT_AHEAD="%{$fg_bold[red]%}!%{$reset_color%}"
-    ZSH_THEME_GIT_PROMPT_CLEAN="%{$FG[076]%}% {$reset_color%}%{$FG[208]%}"
+    ZSH_THEME_GIT_PROMPT_CLEAN="%{$FG[076]%} %{$reset_color%}%{$FG[208]%}"
 
     #ZSH_THEME_GIT_PROMPT_ADDED="%{$fg[green]%} ✚"
     #ZSH_THEME_GIT_PROMPT_MODIFIED="%{$fg[blue]%} ✹"
@@ -193,15 +193,17 @@ setprompt() {
     # For debug: PR_HBAR="─"
     PR_HBAR=" "
 
-    #ret_status="%(?,%{$FG[070]%}→,%{$FG[001]%}→)"
-    ret_status="%{$FG[070]%}$"
+    ret_status="%(?,%{$FG[070]%}$,%{$FG[009]%}$)"
+    #ret_status="%{$FG[070]%}$"
 
     PROMPT='
-%{$FG[208]%}%n%{$FG[250]%}@%{$FG[208]%}%m%{$FG[250]%}:%{$PR_PWDCOLOR%}%$PR_PWDLEN<...<%~%<<$(git_prompt_info)${(e)PR_FILLBAR}\
- %{$FG[250]%}[ $MY_FREE_RAM, $MY_CPU_LOAD, $MY_AVERAGE_CPU_TEMP ] %{$FG[123]%}%*%{$reset_color%}
+%{$FG[208]%}%n%{$FG[250]%}@%{$FG[208]%}%m%{$FG[250]%}:%{$PR_PWDCOLOR%}\
+%$PR_PWDLEN<...<%~%<<$(git_prompt_info)${(e)PR_FILLBAR} %{$FG[208]%}  \
+%{$FG[250]%}$MY_FREE_RAM %{$FG[208]%}  %{$FG[250]%}$MY_CPU_LOAD %{$FG[208]%} \
+%{$FG[250]%}$MY_AVERAGE_CPU_TEMP %{$FG[123]%}%*%{$reset_color%}
 $ret_status%{$reset_color%} '
 
-    RPROMPT='$(battery_status)%{$reset_color%}'
+    RPROMPT='$(battery_status)'
 }
 
 setprompt
