@@ -179,7 +179,9 @@ setprompt
 TRAPWINCH() {
     # TODO Hmm tak tady uz se zacinam ztracet :)
     zle || return 0
-    myprecmd
+    setupMyPromptVariables
+    calculateVariablesWidths
+    executeMyPreCmd
     #setprompt
     zle reset-prompt
 }
