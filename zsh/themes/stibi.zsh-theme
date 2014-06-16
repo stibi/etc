@@ -1,16 +1,12 @@
 
-# Aktualne nepouzito
-#function get_nr_jobs() {
-#  jobs | wc -l
-#}
-
 function get_free_memory {
   MY_FREE_RAM=`free -m | awk '{if (NR==3) print $4}' | xargs -i echo 'scale=1;{}/1000' | bc`"G"
 }
 
 function get_cpu_load() {
   #uptime | awk '{print $11}' | tr ',' ' '
-  MY_CPU_LOAD=`uptime | awk '{print $10}' | tr -d ','`
+  #MY_CPU_LOAD=`uptime | awk '{print $10}' | tr -d ','`
+  MY_CPU_LOAD=`uptime | grep -ohe 'load average[s:][: ].*' | awk '{ print $3 }' | tr -d ","`
 }
 
 function get_average_cpu_temp() {
@@ -30,32 +26,23 @@ function get_pwd() {
     echo "${PWD/$HOME/~}"
 }
 
-# REMOVE ME
-#function battery_status() {
-#  if [ -e ~/bin/battery_charge.py ]
-#  then
-#    echo `python ~/bin/battery_charge.py`
-#  else
-#    echo '';
-#  fi
-#}
-
 function battery_status() {
-    local acpi
-    acpi="$(acpi --battery 2>/dev/null)"
-    local BATT_STATE="$(acpi -b)"
+    #local acpi
+    #acpi="$(acpi --battery 2>/dev/null)"
+    local BATT_STATE="$(acpi --battery 2>/dev/null)"
     local BATT_PERCENT="$(echo ${BATT_STATE[(w)4]}|sed -r 's/(^[0-9]+).*/\1/')"
     local BATT_STATUS="$(echo ${BATT_STATE[(w)3]})"
     if [[ "${BATT_STATUS}" = "Discharging," ]]; then
         if [[ -z "${BATT_PERCENT}" ]]; then
             PR_BATTERY=""
         elif [[ "${BATT_PERCENT}" -lt 15 ]]; then
-            # pajpa backup PR_BATTERY="${fg[red]%}|${fg[red]} batt:${BATT_PERCENT}%%"
-            PR_BATTERY="${FG[001]}batt:${BATT_PERCENT}%%"
+            # Pokud je baterka pod 15%, zobrazim misto procent zbyvajici cas
+            BATT_REMAINING="$(echo ${BATT_STATE[(w)5]})"
+            PR_BATTERY="${FX[bold]}${FG[009]}${BATT_REMAINING}"
         elif [[ "${BATT_PERCENT}" -lt 60 ]]; then
-            PR_BATTERY="${FG[226]}batt:${BATT_PERCENT}%%"
+            PR_BATTERY="${FG[010]}${BATT_PERCENT}%%"
         elif [[ "${BATT_PERCENT}" -lt 100 ]]; then
-            PR_BATTERY="${FG[070]}batt:${BATT_PERCENT}%%"
+            PR_BATTERY="${FG[040]}${BATT_PERCENT}%%"
         else
             PR_BATTERY=""
         fi
@@ -64,12 +51,6 @@ function battery_status() {
     fi
     echo $PR_BATTERY
 }
-
-# function prompt_char {
-#     git branch >/dev/null 2>/dev/null && echo '±' && return
-#     hg root >/dev/null 2>/dev/null && echo '☿' && return
-#     echo '%(!.!.➜)'
-# }
 
 # TODO tuhle fci uz ted asi nebudu potrebovat, kdyz mam v obou ZSH_THEME_GIT_PROMPT_DIRTY a ZSH_THEME_GIT_PROMPT_CLEAN neco
 # nastaveno a oboji je stejne dlouhe
@@ -129,7 +110,8 @@ function myprecmd() {
     #freeram=$(get_free_RAM)
     #currentload=$(get_load)
     # asi zatim netreba: freeramsize=${#${(S%%)freeram//$~zero/}}
-    sysinfosize=${#${(%):-$MY_FREE_RAM $MY_CPU_LOAD $MY_AVERAGE_CPU_TEMP      }}
+    # Mezera pred budikem oddeluje sysinfo PWD
+    sysinfosize=${#${(%):-  $MY_FREE_RAM  $MY_CPU_LOAD  $MY_AVERAGE_CPU_TEMP }}
 
 
     get_gitpromptlen
@@ -154,7 +136,9 @@ function myprecmd() {
         # -1 je urcite za mezeru mezi fillbarem a [sysinfo], ale proc to chce -2 si nejsem jisty
         ((PR_PWDLEN = $TERMWIDTH - $promptsize - $timestampsize - $sysinfosize - $GITPROMPTSIZE - 2))
     else
-        PR_FILLBAR="\${(l.(($TERMWIDTH - $total_visible_prompt_len - 1))..${PR_HBAR}.)}"
+        # TODO nekde mi tam litaji dve mezery, proto ty dve -2
+        # TODO fix it
+        PR_FILLBAR="\${(l.(($TERMWIDTH - $total_visible_prompt_len - 2))..${PR_HBAR}.)}"
     fi
 
     # now let's change the color of the path if it's not writable
@@ -197,13 +181,16 @@ setprompt() {
     #ret_status="%{$FG[070]%}$"
 
     PROMPT='
-%{$FG[208]%}%n%{$FG[250]%}@%{$FG[208]%}%m%{$FG[250]%}:%{$PR_PWDCOLOR%}\
-%$PR_PWDLEN<...<%~%<<$(git_prompt_info)${(e)PR_FILLBAR} %{$FG[208]%}  \
-%{$FG[250]%}$MY_FREE_RAM %{$FG[208]%}  %{$FG[250]%}$MY_CPU_LOAD %{$FG[208]%} \
-%{$FG[250]%}$MY_AVERAGE_CPU_TEMP %{$FG[123]%}%*%{$reset_color%}
+%{$FX[bold]%}%{$FG[208]%}%n%{$FG[250]%}@%{$FG[208]%}%m%{$FX[reset]%}\
+%{$FG[250]%}:%{$PR_PWDCOLOR%}\
+%$PR_PWDLEN<...<%~%<<$(git_prompt_info)${(e)PR_FILLBAR} \
+%{$FG[208]%}  %{$FG[250]%}$MY_FREE_RAM \
+%{$FG[208]%}  %{$FG[250]%}$MY_CPU_LOAD \
+%{$FG[208]%} %{$FG[250]%}$MY_AVERAGE_CPU_TEMP \
+%{$FG[123]%}%*%{$reset_color%}
 $ret_status%{$reset_color%} '
 
-    RPROMPT='$(battery_status)'
+    RPROMPT='$(battery_status)%{$reset_color%}'
 }
 
 setprompt
