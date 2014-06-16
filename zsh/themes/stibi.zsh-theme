@@ -78,22 +78,31 @@ function get_gitpromptlen() {
     local RESETCOLOR_LEN=5
     # TODO melo by to 30, ale staci 27. nechapu, tohle je asi blbe
     local DIRTYGIT_LEN=27
-    local gitinfo=$(git_prompt_info)
-    GITPROMPTSIZE=${#${(%):-$gitinfo}}
-    if [ $GITPROMPTSIZE != 0 ]; then
-        (( GITPROMPTSIZE = $GITPROMPTSIZE - $COLORCODE_LEN - $RESETCOLOR_LEN ))
+    gitinfo=$(git_prompt_info)
+    local gitPromptWidth=${#${(%):-$gitinfo}}
+    if [ $gitPromptWidth != 0 ]; then
+        (( gitPromptWidth = $gitPromptWidth - $COLORCODE_LEN - $RESETCOLOR_LEN ))
         # TODO podminka uz neni potreba, prejmenovat $DIRTYGIT_LEN a vzdy to odecitat proto oba ZSH_THEME_GIT_PROMPT_DIRTY a
         # ZSH_THEME_GIT_PROMPT_CLEAN jsou stejne dlouhe
         if is_git_dirty; then
-            (( GITPROMPTSIZE = $GITPROMPTSIZE - $DIRTYGIT_LEN ))
+            (( gitPromptWidth = $gitPromptWidth - $DIRTYGIT_LEN ))
         fi
     fi
+    echo "$gitPromptWidth"
 }
 
 function setupMyPromptVariables {
     STIBI_THEME_CPU_LOAD=$(get_cpu_load)
     STIBI_THEME_FREE_MEMORY=$(get_free_memory)
     STIBI_THEME_CPU_TEMP=$(get_average_cpu_temp)
+}
+
+function calculateVariablesWidths {
+    STIBI_THEME_PROMPT_WIDTH=${#${(%):-%n@%m:}}
+    STIBI_THEME_PWD_WIDTH=${#${(%):-%~}}
+    STIBI_THEME_TIMESTAMP_WIDTH=${#${(%):-%*}}
+    STIBI_THEME_RSYSINFO_WIDTH=${#${(%):-  $STIBI_THEME_FREE_MEMORY  $STIBI_THEME_CPU_LOAD  $STIBI_THEME_CPU_TEMP }}
+    STIBI_THEME_GIT_PROMPT_WIDTH=$(get_gitpromptlen)
 }
 
 function executeMyPreCmd() {
@@ -105,40 +114,14 @@ function executeMyPreCmd() {
     PR_FILLBAR=""
     PR_PWDLEN=""
 
-    #local promptsize=${#${(%):%n@%m}}
-    # TODO kua jak tohle presne funguje, hlavne to :-
-    local promptsize=${#${(%):-%n@%m:}}
-    local pwdsize=${#${(%):-%~}}
-    local timestampsize=${#${(%):-%*}}
-
-    # asi zatim netreba: local zero='%([BSUbfksu]|([FB]|){*})'
-    #local myram="$(get_free_memory)"
-    # asi zatim netreba: freeramsize=${#${(S%%)freeram//$~zero/}}
-    # Mezera pred budikem oddeluje sysinfo PWD
-    sysinfosize=${#${(%):-  $STIBI_THEME_FREE_MEMORY  $STIBI_THEME_CPU_LOAD  $STIBI_THEME_CPU_TEMP }}
-
-
-    get_gitpromptlen
-    #gitinfo=$(git_prompt_info)
-    #gitinfosize=${#${(%):-$gitinfo}}
-    #COLORCODE_LEN=12
-    #gitinfo=$(git_prompt_info)
-    #local gitpromptlen=$(get_gitpromptlen)
-    #finalgitinfosize
-
-    #cpu_load_len=${#${(%):-$MY_CPU_LOAD}}
-    # TODO pripocist do sysinfosize
-    #cpu_temp_len=${#${(%):-$AVERAGE_CPU_TEMP}}
-    #(( sysinfosize = $sysinfosize + $get_average_cpu_temp ))
-
     local total_visible_prompt_len
     # ten +1 na konci je kvuli mezere na prave strane, mezi fillbarem a [sysinfo], spust si debug fill a uvidis to
-    (( total_visible_prompt_len = $promptsize + $timestampsize + $pwdsize + $sysinfosize + $GITPROMPTSIZE ))
+    (( total_visible_prompt_len = $STIBI_THEME_PROMPT_WIDTH + $STIBI_THEME_TIMESTAMP_WIDTH + $STIBI_THEME_PWD_WIDTH + $STIBI_THEME_RSYSINFO_WIDTH + $STIBI_THEME_GIT_PROMPT_WIDTH ))
 
     if [[ $total_visible_prompt_len -gt $TERMWIDTH ]]; then
         # bez te dvojky na konci se to chovalo blbe, pri uzkem terminalu, spatne se zarovnala prava strana
         # -1 je urcite za mezeru mezi fillbarem a [sysinfo], ale proc to chce -2 si nejsem jisty
-        ((PR_PWDLEN = $TERMWIDTH - $promptsize - $timestampsize - $sysinfosize - $GITPROMPTSIZE - 2))
+        ((PR_PWDLEN = $TERMWIDTH - $STIBI_THEME_PROMPT_WIDTH - $STIBI_THEME_TIMESTAMP_WIDTH - $STIBI_THEME_RSYSINFO_WIDTH - $STIBI_THEME_GIT_PROMPT_WIDTH - 2))
     else
         # TODO nekde mi tam litaji dve mezery, proto ty dve -2
         # TODO fix it
@@ -153,11 +136,6 @@ function executeMyPreCmd() {
     fi
 }
 
-#local smiley="%(?,%{$fg[green]%}☺ %{$reset_color%},%{$fg[red]%}☹ %{$reset_color%})"
-
-#PROMPT='$fg_bold[green]%}%p %{$fg[cyan]%}%c %{$fg_bold[blue]%}$(git_prompt_info)%{$fg_bold[blue]%} % %{$reset_color%}'
-#PROMPT='%{$fg_bold[green]%}%n@%m% %  %{$reset_color%}'
-
 setprompt() {
     # TODO tohle dela co?
     #setopt prompt_subst
@@ -167,15 +145,7 @@ setprompt() {
     ZSH_THEME_GIT_PROMPT_PREFIX="%{$FG[208]%} [git:"
     ZSH_THEME_GIT_PROMPT_SUFFIX="]%{$reset_color%}"
     ZSH_THEME_GIT_PROMPT_DIRTY="%{$FG[001]%} %{$reset_color%}%{$FG[208]%}"
-    #ZSH_THEME_GIT_PROMPT_AHEAD="%{$fg_bold[red]%}!%{$reset_color%}"
     ZSH_THEME_GIT_PROMPT_CLEAN="%{$FG[076]%} %{$reset_color%}%{$FG[208]%}"
-
-    #ZSH_THEME_GIT_PROMPT_ADDED="%{$fg[green]%} ✚"
-    #ZSH_THEME_GIT_PROMPT_MODIFIED="%{$fg[blue]%} ✹"
-    #ZSH_THEME_GIT_PROMPT_DELETED="%{$fg[red]%} ✖"
-    #ZSH_THEME_GIT_PROMPT_RENAMED="%{$fg[magenta]%} ➜"
-    #ZSH_THEME_GIT_PROMPT_UNMERGED="%{$fg[yellow]%} ═"
-    #ZSH_THEME_GIT_PROMPT_UNTRACKED="%{$fg[cyan]%} ✭
 
     # TODO prejmenovat promenou na neco hezciho
     # For debug: PR_HBAR="─"
@@ -216,4 +186,5 @@ TRAPWINCH() {
 
 autoload -U add-zsh-hook
 add-zsh-hook precmd setupMyPromptVariables
+add-zsh-hook precmd calculateVariablesWidths
 add-zsh-hook precmd executeMyPreCmd
