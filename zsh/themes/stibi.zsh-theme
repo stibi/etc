@@ -1,12 +1,12 @@
 
 function get_free_memory {
-  MY_FREE_RAM=`free -m | awk '{if (NR==3) print $4}' | xargs -i echo 'scale=1;{}/1000' | bc`"G"
+  local free_memory=`free -m | awk '{if (NR==3) print $4}' | xargs -i echo 'scale=1;{}/1000' | bc`"G"
+  echo $free_memory
 }
 
 function get_cpu_load() {
-  #uptime | awk '{print $11}' | tr ',' ' '
-  #MY_CPU_LOAD=`uptime | awk '{print $10}' | tr -d ','`
-  MY_CPU_LOAD=`uptime | grep -ohe 'load average[s:][: ].*' | awk '{ print $3 }' | tr -d ","`
+  local cpu_load=`uptime | grep -ohe 'load average[s:][: ].*' | awk '{ print $3 }' | tr -d ","`
+  echo $cpu_load
 }
 
 function get_average_cpu_temp() {
@@ -16,8 +16,10 @@ function get_average_cpu_temp() {
         ((sum=$sum+$i))
         ((count=$count+1))
     done
-    ((AVERAGE_CPU_TEMP=$sum/$count))
-    MY_AVERAGE_CPU_TEMP=$AVERAGE_CPU_TEMP"°C"
+    local average_cpu_temp
+    ((average_cpu_temp=$sum/$count))
+    average_cpu_temp=$average_cpu_temp"°C"
+    echo $average_cpu_temp
 }
 
 function get_pwd() {
@@ -29,6 +31,7 @@ function get_pwd() {
 function battery_status() {
     #local acpi
     #acpi="$(acpi --battery 2>/dev/null)"
+    local PR_BATTERY
     local BATT_STATE="$(acpi --battery 2>/dev/null)"
     local BATT_PERCENT="$(echo ${BATT_STATE[(w)4]}|sed -r 's/(^[0-9]+).*/\1/')"
     local BATT_STATUS="$(echo ${BATT_STATE[(w)3]})"
@@ -58,25 +61,24 @@ function is_git_dirty() {
     local flag=0 # 0 znamena true, git IS dirty!!
     # pokud je len 0 - adresart je cisty, neni dirty, nastavim flag=1, is_git_dirty fce udelala echo "$ZSH_THEME_GIT_PROMPT_CLEAN" (tahle env musi byt tedy prazdna!!!)
     # nenulova delka znamena, ze parse_git_dirty fce udelala echo "$ZSH_THEME_GIT_PROMPT_DIRTY", ktere jsem nastavil nejaky obsah, ktery se ma zobrazit
-    DIRTY_GIT_LEN=${#$(parse_git_dirty)}
+    local DIRTY_GIT_LEN=${#$(parse_git_dirty)}
 
     if [ $DIRTY_GIT_LEN = 0 ]; then
         # adresa je cisty, neni dirty, nastavuji jednicku do flagu, coz znamena false
         flag=1
     fi
 
-    return $flag
+    return $fl
 }
-
 
 function get_gitpromptlen() {
     # TODO 11 asi neni dobre
-    COLORCODE_LEN=11
+    local COLORCODE_LEN=11
     # TODO nevim, jaktoze je resetcolor jenom 5 dlouhy: %{$reset_color%} - co se doplni za $reset_color ? Asi to bude jenom jeden znak
-    RESETCOLOR_LEN=5
+    local RESETCOLOR_LEN=5
     # TODO melo by to 30, ale staci 27. nechapu, tohle je asi blbe
-    DIRTYGIT_LEN=27
-    gitinfo=$(git_prompt_info)
+    local DIRTYGIT_LEN=27
+    local gitinfo=$(git_prompt_info)
     GITPROMPTSIZE=${#${(%):-$gitinfo}}
     if [ $GITPROMPTSIZE != 0 ]; then
         (( GITPROMPTSIZE = $GITPROMPTSIZE - $COLORCODE_LEN - $RESETCOLOR_LEN ))
@@ -88,7 +90,13 @@ function get_gitpromptlen() {
     fi
 }
 
-function myprecmd() {
+function setupMyPromptVariables {
+    STIBI_THEME_CPU_LOAD=$(get_cpu_load)
+    STIBI_THEME_FREE_MEMORY=$(get_free_memory)
+    STIBI_THEME_CPU_TEMP=$(get_average_cpu_temp)
+}
+
+function executeMyPreCmd() {
     local TERMWIDTH
     (( TERMWIDTH = ${COLUMNS} - 1 ))
 
@@ -104,14 +112,10 @@ function myprecmd() {
     local timestampsize=${#${(%):-%*}}
 
     # asi zatim netreba: local zero='%([BSUbfksu]|([FB]|){*})'
-    get_free_memory
-    get_cpu_load
-    get_average_cpu_temp
-    #freeram=$(get_free_RAM)
-    #currentload=$(get_load)
+    #local myram="$(get_free_memory)"
     # asi zatim netreba: freeramsize=${#${(S%%)freeram//$~zero/}}
     # Mezera pred budikem oddeluje sysinfo PWD
-    sysinfosize=${#${(%):-  $MY_FREE_RAM  $MY_CPU_LOAD  $MY_AVERAGE_CPU_TEMP }}
+    sysinfosize=${#${(%):-  $STIBI_THEME_FREE_MEMORY  $STIBI_THEME_CPU_LOAD  $STIBI_THEME_CPU_TEMP }}
 
 
     get_gitpromptlen
@@ -180,13 +184,15 @@ setprompt() {
     ret_status="%(?,%{$FG[070]%}$,%{$FG[009]%}$)"
     #ret_status="%{$FG[070]%}$"
 
+    local myram="$(get_free_memory)"
+
     PROMPT='
 %{$FX[bold]%}%{$FG[208]%}%n%{$FG[250]%}@%{$FG[208]%}%m%{$FX[reset]%}\
 %{$FG[250]%}:%{$PR_PWDCOLOR%}\
 %$PR_PWDLEN<...<%~%<<$(git_prompt_info)${(e)PR_FILLBAR} \
-%{$FG[208]%}  %{$FG[250]%}$MY_FREE_RAM \
-%{$FG[208]%}  %{$FG[250]%}$MY_CPU_LOAD \
-%{$FG[208]%} %{$FG[250]%}$MY_AVERAGE_CPU_TEMP \
+%{$FG[208]%}  %{$FG[250]%}$STIBI_THEME_FREE_MEMORY \
+%{$FG[208]%}  %{$FG[250]%}$STIBI_THEME_CPU_LOAD \
+%{$FG[208]%} %{$FG[250]%}$STIBI_THEME_CPU_TEMP \
 %{$FG[123]%}%*%{$reset_color%}
 $ret_status%{$reset_color%} '
 
@@ -209,4 +215,5 @@ TRAPWINCH() {
 }
 
 autoload -U add-zsh-hook
-add-zsh-hook precmd myprecmd
+add-zsh-hook precmd setupMyPromptVariables
+add-zsh-hook precmd executeMyPreCmd
