@@ -105,61 +105,92 @@ function calculateVariablesWidths {
     STIBI_THEME_GIT_PROMPT_WIDTH=$(get_gitpromptlen)
 }
 
+function calculatePromptWidth {
+    local promptWidth;
+    (( promptWidth = $STIBI_THEME_PROMPT_WIDTH + $STIBI_THEME_TIMESTAMP_WIDTH \
+        + $STIBI_THEME_PWD_WIDTH + $STIBI_THEME_RSYSINFO_WIDTH \
+        + $STIBI_THEME_GIT_PROMPT_WIDTH ))
+    echo $promptWidth
+}
+
+function calculateAdjustedPwdWidth {
+    local totalTerminalWidth=$1
+    local adjustedPwdWidth
+    # bez te dvojky na konci se to chovalo blbe, pri uzkem terminalu, spatne se zarovnala prava strana
+        # -1 je urcite za mezeru mezi fillbarem a [sysinfo], ale proc to chce -2 si nejsem jisty
+    # Odecitam vsechno krom pwd, abych zjistil, kolik mi tam na pwd zbyde mista
+    # TODO lepe zdokumentovat
+    ((adjustedPwdWidth = $totalTerminalWidth - $STIBI_THEME_PROMPT_WIDTH - $STIBI_THEME_TIMESTAMP_WIDTH - $STIBI_THEME_RSYSINFO_WIDTH - $STIBI_THEME_GIT_PROMPT_WIDTH - 2))
+    echo $adjustedPwdWidth
+}
+
+function getFillbarToAlignRightPromptSide {
+    local totalTerminalWidth=$1
+    local totalVisiblePromptWidth=$2
+    # For debug: fillbarSymbol="─"
+    local fillbarSymbol=" "
+    local fillbar="\${(l.(($totalTerminalWidth - $totalVisiblePromptWidth - 2))..${fillbarSymbol}.)}"
+    echo $fillbar
+}
+
+function isPromptLongerThanTerminalWidth {
+    local totalTerminalWidth=$1
+    local totalVisiblePromptWidth=$2
+    if [[ $totalVisiblePromptWidth -gt $totalTerminalWidth ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+function getColorForPwd {
+    local pwdColor
+    if [[ -w $PWD ]]; then
+        pwdColor="${FG[123]}"
+    else
+        pwdColor="${FG[192]}"
+    fi
+    echo $pwdColor
+}
+
 function executeMyPreCmd() {
-    local TERMWIDTH
-    (( TERMWIDTH = ${COLUMNS} - 1 ))
+    local termwidth
+    (( termwidth = ${COLUMNS} - 1 ))
 
     # TODO jine pojmenovani maybe? Proc ten PR_ prefix?
 
-    PR_FILLBAR=""
-    PR_PWDLEN=""
+    STIBI_THEME_FILLBAR=""
+    ADJUST_PWD_TO_WIDTH=""
 
-    local total_visible_prompt_len
-    # ten +1 na konci je kvuli mezere na prave strane, mezi fillbarem a [sysinfo], spust si debug fill a uvidis to
-    (( total_visible_prompt_len = $STIBI_THEME_PROMPT_WIDTH + $STIBI_THEME_TIMESTAMP_WIDTH + $STIBI_THEME_PWD_WIDTH + $STIBI_THEME_RSYSINFO_WIDTH + $STIBI_THEME_GIT_PROMPT_WIDTH ))
+    local visiblePromptWidth=$(calculatePromptWidth)
 
-    if [[ $total_visible_prompt_len -gt $TERMWIDTH ]]; then
-        # bez te dvojky na konci se to chovalo blbe, pri uzkem terminalu, spatne se zarovnala prava strana
-        # -1 je urcite za mezeru mezi fillbarem a [sysinfo], ale proc to chce -2 si nejsem jisty
-        ((PR_PWDLEN = $TERMWIDTH - $STIBI_THEME_PROMPT_WIDTH - $STIBI_THEME_TIMESTAMP_WIDTH - $STIBI_THEME_RSYSINFO_WIDTH - $STIBI_THEME_GIT_PROMPT_WIDTH - 2))
+    if isPromptLongerThanTerminalWidth $termwidth $visiblePromptWidth; then
+        ADJUST_PWD_TO_WIDTH=$(calculateAdjustedPwdWidth $termwidth)
     else
         # TODO nekde mi tam litaji dve mezery, proto ty dve -2
         # TODO fix it
-        PR_FILLBAR="\${(l.(($TERMWIDTH - $total_visible_prompt_len - 2))..${PR_HBAR}.)}"
+        STIBI_THEME_FILLBAR=$(getFillbarToAlignRightPromptSide $termwidth $visiblePromptWidth)
     fi
 
     # now let's change the color of the path if it's not writable
-    if [[ -w $PWD ]]; then
-        PR_PWDCOLOR="${FG[123]}"
-    else
-        PR_PWDCOLOR="${FG[192]}"
-    fi
+    STIBI_THEME_PWD_COLOR=$(getColorForPwd)
 }
 
 setprompt() {
     # TODO tohle dela co?
     #setopt prompt_subst
 
-    ###
-    # Modify Git prompt
     ZSH_THEME_GIT_PROMPT_PREFIX="%{$FG[208]%} [git:"
     ZSH_THEME_GIT_PROMPT_SUFFIX="]%{$reset_color%}"
     ZSH_THEME_GIT_PROMPT_DIRTY="%{$FG[001]%} %{$reset_color%}%{$FG[208]%}"
     ZSH_THEME_GIT_PROMPT_CLEAN="%{$FG[076]%} %{$reset_color%}%{$FG[208]%}"
 
-    # TODO prejmenovat promenou na neco hezciho
-    # For debug: PR_HBAR="─"
-    PR_HBAR=" "
-
     ret_status="%(?,%{$FG[070]%}$,%{$FG[009]%}$)"
-    #ret_status="%{$FG[070]%}$"
-
-    local myram="$(get_free_memory)"
 
     PROMPT='
 %{$FX[bold]%}%{$FG[208]%}%n%{$FG[250]%}@%{$FG[208]%}%m%{$FX[reset]%}\
-%{$FG[250]%}:%{$PR_PWDCOLOR%}\
-%$PR_PWDLEN<...<%~%<<$(git_prompt_info)${(e)PR_FILLBAR} \
+%{$FG[250]%}:%{$STIBI_THEME_PWD_COLOR%}\
+%$ADJUST_PWD_TO_WIDTH<...<%~%<<$(git_prompt_info)${(e)STIBI_THEME_FILLBAR} \
 %{$FG[208]%}  %{$FG[250]%}$STIBI_THEME_FREE_MEMORY \
 %{$FG[208]%}  %{$FG[250]%}$STIBI_THEME_CPU_LOAD \
 %{$FG[208]%} %{$FG[250]%}$STIBI_THEME_CPU_TEMP \
@@ -171,18 +202,12 @@ $ret_status%{$reset_color%} '
 
 setprompt
 
-#TMOUT=1
-#TRAPALRM() {
-#    zle reset-prompt
-#}
-
 TRAPWINCH() {
     # TODO Hmm tak tady uz se zacinam ztracet :)
     zle || return 0
     setupMyPromptVariables
     calculateVariablesWidths
     executeMyPreCmd
-    #setprompt
     zle reset-prompt
 }
 
