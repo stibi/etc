@@ -28,6 +28,15 @@ function get_pwd() {
     echo "${PWD/$HOME/~}"
 }
 
+# Magic here !!!
+# http://stackoverflow.com/questions/10564314/count-length-of-user-visible-string-for-zsh-prompt
+function calculateUserVisibleStringLength {
+    local myString=$1
+    local zero='%([BSUbfksu]|([FB]|){*})'
+    local myStringWidth=${#${(S%%)myString//$~zero/}}
+    echo $myStringWidth
+}
+
 # No need to calculate lenght of this one, because it's placed in $RPROMPT
 # and aligned by ZSH automatically
 function getBatteryStatus() {
@@ -72,10 +81,15 @@ function setupMyPromptVariables {
 }
 
 function calculateVariablesWidths {
-    STIBI_THEME_PROMPT_WIDTH=${#${(%):-%n@%m:}}
-    STIBI_THEME_PWD_WIDTH=${#${(%):-%~}}
-    STIBI_THEME_TIMESTAMP_WIDTH=${#${(%):-%*}}
-    STIBI_THEME_RSYSINFO_WIDTH=${#${(%):-  $STIBI_THEME_FREE_MEMORY  $STIBI_THEME_CPU_LOAD  $STIBI_THEME_CPU_TEMP }}
+    STIBI_THEME_PROMPT_WIDTH=$(calculateUserVisibleStringLength "%n@%m:")
+    STIBI_THEME_PWD_WIDTH=$(calculateUserVisibleStringLength "%~")
+    STIBI_THEME_TIMESTAMP_WIDTH=$(calculateUserVisibleStringLength "%*")
+    # "X" na zacatku a nakonci je kvuli mezere pred a za, funkce ty mezery asi
+    # nepocita jako viditelne znaky (TODO) takze mi to nesedlo a musel jsem
+    # jinde jeste navic odecitat dvojku (viz git history)
+    # Nejsem si uplne jisty, jestli nekecam, ale myslim, ze ne.
+    # TODO vyhodit mezery z PROMPT a ty Xka tady a uvidim
+    STIBI_THEME_RSYSINFO_WIDTH=$(calculateUserVisibleStringLength "X  $STIBI_THEME_FREE_MEMORY  $STIBI_THEME_CPU_LOAD  $STIBI_THEME_CPU_TEMP X")
     STIBI_THEME_GIT_PROMPT_WIDTH=$(calculateGitPromptWidth)
 }
 
@@ -94,7 +108,7 @@ function calculateAdjustedPwdWidth {
         # -1 je urcite za mezeru mezi fillbarem a [sysinfo], ale proc to chce -2 si nejsem jisty
     # Odecitam vsechno krom pwd, abych zjistil, kolik mi tam na pwd zbyde mista
     # TODO lepe zdokumentovat
-    ((adjustedPwdWidth = $totalTerminalWidth - $STIBI_THEME_PROMPT_WIDTH - $STIBI_THEME_TIMESTAMP_WIDTH - $STIBI_THEME_RSYSINFO_WIDTH - $STIBI_THEME_GIT_PROMPT_WIDTH - 2))
+    ((adjustedPwdWidth = $totalTerminalWidth - $STIBI_THEME_PROMPT_WIDTH - $STIBI_THEME_TIMESTAMP_WIDTH - $STIBI_THEME_RSYSINFO_WIDTH - $STIBI_THEME_GIT_PROMPT_WIDTH))
     echo $adjustedPwdWidth
 }
 
@@ -103,7 +117,7 @@ function getFillbarToAlignRightPromptSide {
     local totalVisiblePromptWidth=$2
     # For debug: fillbarSymbol="─"
     local fillbarSymbol=" "
-    local fillbar="\${(l.(($totalTerminalWidth - $totalVisiblePromptWidth - 2))..${fillbarSymbol}.)}"
+    local fillbar="\${(l.(($totalTerminalWidth - $totalVisiblePromptWidth))..${fillbarSymbol}.)}"
     echo $fillbar
 }
 
