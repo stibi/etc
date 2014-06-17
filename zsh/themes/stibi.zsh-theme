@@ -55,40 +55,13 @@ function getBatteryStatus() {
     echo $batteryStatus
 }
 
-# TODO tuhle fci uz ted asi nebudu potrebovat, kdyz mam v obou ZSH_THEME_GIT_PROMPT_DIRTY a ZSH_THEME_GIT_PROMPT_CLEAN neco
-# nastaveno a oboji je stejne dlouhe
-function is_git_dirty() {
-    local flag=0 # 0 znamena true, git IS dirty!!
-    # pokud je len 0 - adresart je cisty, neni dirty, nastavim flag=1, is_git_dirty fce udelala echo "$ZSH_THEME_GIT_PROMPT_CLEAN" (tahle env musi byt tedy prazdna!!!)
-    # nenulova delka znamena, ze parse_git_dirty fce udelala echo "$ZSH_THEME_GIT_PROMPT_DIRTY", ktere jsem nastavil nejaky obsah, ktery se ma zobrazit
-    local DIRTY_GIT_LEN=${#$(parse_git_dirty)}
-
-    if [ $DIRTY_GIT_LEN = 0 ]; then
-        # adresa je cisty, neni dirty, nastavuji jednicku do flagu, coz znamena false
-        flag=1
-    fi
-
-    return $fl
-}
-
-function get_gitpromptlen() {
-    # TODO 11 asi neni dobre
-    local COLORCODE_LEN=11
-    # TODO nevim, jaktoze je resetcolor jenom 5 dlouhy: %{$reset_color%} - co se doplni za $reset_color ? Asi to bude jenom jeden znak
-    local RESETCOLOR_LEN=5
-    # TODO melo by to 30, ale staci 27. nechapu, tohle je asi blbe
-    local DIRTYGIT_LEN=27
+function calculateGitPromptWidth() {
+    # Magic here !!!
+    # http://stackoverflow.com/questions/10564314/count-length-of-user-visible-string-for-zsh-prompt
     gitinfo=$(git_prompt_info)
-    local gitPromptWidth=${#${(%):-$gitinfo}}
-    if [ $gitPromptWidth != 0 ]; then
-        (( gitPromptWidth = $gitPromptWidth - $COLORCODE_LEN - $RESETCOLOR_LEN ))
-        # TODO podminka uz neni potreba, prejmenovat $DIRTYGIT_LEN a vzdy to odecitat proto oba ZSH_THEME_GIT_PROMPT_DIRTY a
-        # ZSH_THEME_GIT_PROMPT_CLEAN jsou stejne dlouhe
-        if is_git_dirty; then
-            (( gitPromptWidth = $gitPromptWidth - $DIRTYGIT_LEN ))
-        fi
-    fi
-    echo "$gitPromptWidth"
+    local zero='%([BSUbfksu]|([FB]|){*})'
+    local gitPromptWidth=${#${(S%%)gitinfo//$~zero/}}
+    echo $gitPromptWidth
 }
 
 function setupMyPromptVariables {
@@ -103,7 +76,7 @@ function calculateVariablesWidths {
     STIBI_THEME_PWD_WIDTH=${#${(%):-%~}}
     STIBI_THEME_TIMESTAMP_WIDTH=${#${(%):-%*}}
     STIBI_THEME_RSYSINFO_WIDTH=${#${(%):-  $STIBI_THEME_FREE_MEMORY  $STIBI_THEME_CPU_LOAD  $STIBI_THEME_CPU_TEMP }}
-    STIBI_THEME_GIT_PROMPT_WIDTH=$(get_gitpromptlen)
+    STIBI_THEME_GIT_PROMPT_WIDTH=$(calculateGitPromptWidth)
 }
 
 function calculatePromptWidth {
