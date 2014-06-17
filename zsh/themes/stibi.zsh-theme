@@ -1,15 +1,15 @@
 
-function get_free_memory {
+function getFreeMemory {
   local free_memory=`free -m | awk '{if (NR==3) print $4}' | xargs -i echo 'scale=1;{}/1000' | bc`"G"
   echo $free_memory
 }
 
-function get_cpu_load() {
+function getCpuLoad() {
   local cpu_load=`uptime | grep -ohe 'load average[s:][: ].*' | awk '{ print $3 }' | tr -d ","`
   echo $cpu_load
 }
 
-function get_average_cpu_temp() {
+function getAverageCpuTemp() {
     local count=0
     local sum=0
     for i in $(sensors | sed -n -r "s/^(Core).*: *\+([0-9]*)\..°.*/\2/p"); do
@@ -28,31 +28,31 @@ function get_pwd() {
     echo "${PWD/$HOME/~}"
 }
 
-function battery_status() {
-    #local acpi
-    #acpi="$(acpi --battery 2>/dev/null)"
-    local PR_BATTERY
-    local BATT_STATE="$(acpi --battery 2>/dev/null)"
-    local BATT_PERCENT="$(echo ${BATT_STATE[(w)4]}|sed -r 's/(^[0-9]+).*/\1/')"
-    local BATT_STATUS="$(echo ${BATT_STATE[(w)3]})"
-    if [[ "${BATT_STATUS}" = "Discharging," ]]; then
-        if [[ -z "${BATT_PERCENT}" ]]; then
-            PR_BATTERY=""
-        elif [[ "${BATT_PERCENT}" -lt 15 ]]; then
+# No need to calculate lenght of this one, because it's placed in $RPROMPT
+# and aligned by ZSH automatically
+function getBatteryStatus() {
+    local batteryStatus
+    local batteryStateFromACPI="$(acpi --battery 2>/dev/null)"
+    local remainingBatteryPercent="$(echo ${batteryStateFromACPI[(w)4]} | sed -r 's/(^[0-9]+).*/\1/')"
+    local batteryChargingStatus="$(echo ${batteryStateFromACPI[(w)3]})"
+    if [[ "${batteryChargingStatus}" = "Discharging," ]]; then
+        if [[ -z "${remainingBatteryPercent}" ]]; then
+            batteryStatus=""
+        elif [[ "${remainingBatteryPercent}" -lt 15 ]]; then
             # Pokud je baterka pod 15%, zobrazim misto procent zbyvajici cas
-            BATT_REMAINING="$(echo ${BATT_STATE[(w)5]})"
-            PR_BATTERY="${FX[bold]}${FG[009]}${BATT_REMAINING}"
-        elif [[ "${BATT_PERCENT}" -lt 60 ]]; then
-            PR_BATTERY="${FG[010]}${BATT_PERCENT}%%"
-        elif [[ "${BATT_PERCENT}" -lt 100 ]]; then
-            PR_BATTERY="${FG[040]}${BATT_PERCENT}%%"
+            local remainingBatteryTime="$(echo ${batteryStateFromACPI[(w)5]})"
+            batteryStatus="${FX[bold]}${FG[009]}${remainingBatteryTime}"
+        elif [[ "${remainingBatteryPercent}" -lt 60 ]]; then
+            batteryStatus="${FG[010]}${remainingBatteryPercent}%%"
+        elif [[ "${remainingBatteryPercent}" -lt 100 ]]; then
+            batteryStatus="${FG[040]}${remainingBatteryPercent}%%"
         else
-            PR_BATTERY=""
+            batteryStatus=""
         fi
     else
-        PR_BATTERY=""
+        batteryStatus=""
     fi
-    echo $PR_BATTERY
+    echo $batteryStatus
 }
 
 # TODO tuhle fci uz ted asi nebudu potrebovat, kdyz mam v obou ZSH_THEME_GIT_PROMPT_DIRTY a ZSH_THEME_GIT_PROMPT_CLEAN neco
@@ -92,9 +92,10 @@ function get_gitpromptlen() {
 }
 
 function setupMyPromptVariables {
-    STIBI_THEME_CPU_LOAD=$(get_cpu_load)
-    STIBI_THEME_FREE_MEMORY=$(get_free_memory)
-    STIBI_THEME_CPU_TEMP=$(get_average_cpu_temp)
+    STIBI_THEME_CPU_LOAD=$(getCpuLoad)
+    STIBI_THEME_FREE_MEMORY=$(getFreeMemory)
+    STIBI_THEME_CPU_TEMP=$(getAverageCpuTemp)
+    STIBI_THEME_BATTERY_STATUS=$(getBatteryStatus)
 }
 
 function calculateVariablesWidths {
@@ -197,7 +198,7 @@ setprompt() {
 %{$FG[123]%}%*%{$reset_color%}
 $ret_status%{$reset_color%} '
 
-    RPROMPT='$(battery_status)%{$reset_color%}'
+    RPROMPT='$STIBI_THEME_BATTERY_STATUS%{$reset_color%}'
 }
 
 setprompt
