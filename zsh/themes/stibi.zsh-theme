@@ -50,11 +50,11 @@ function getBatteryStatus() {
         elif [[ "${remainingBatteryPercent}" -lt 15 ]]; then
             # Pokud je baterka pod 15%, zobrazim misto procent zbyvajici cas
             local remainingBatteryTime="$(echo ${batteryStateFromACPI[(w)5]})"
-            batteryStatus="${FX[bold]}${FG[009]}${remainingBatteryTime}"
+            batteryStatus="${FX[bold]}${FG[009]}⚡${remainingBatteryTime}"
         elif [[ "${remainingBatteryPercent}" -lt 60 ]]; then
-            batteryStatus="${FG[010]}${remainingBatteryPercent}%%"
+            batteryStatus="${FG[010]}⚡${remainingBatteryPercent}%%"
         elif [[ "${remainingBatteryPercent}" -lt 100 ]]; then
-            batteryStatus="${FG[040]}${remainingBatteryPercent}%%"
+            batteryStatus="${FG[040]}⚡${remainingBatteryPercent}%%"
         else
             batteryStatus=""
         fi
@@ -89,7 +89,7 @@ function calculateVariablesWidths {
     # jinde jeste navic odecitat dvojku (viz git history)
     # Nejsem si uplne jisty, jestli nekecam, ale myslim, ze ne.
     # TODO vyhodit mezery z PROMPT a ty Xka tady a uvidim
-    STIBI_THEME_RSYSINFO_WIDTH=$(calculateUserVisibleStringLength "X  $STIBI_THEME_FREE_MEMORY  $STIBI_THEME_CPU_LOAD  $STIBI_THEME_CPU_TEMP X")
+    STIBI_THEME_RSYSINFO_WIDTH=$(calculateUserVisibleStringLength "X $STIBI_THEME_FREE_MEMORY  $STIBI_THEME_CPU_LOAD  $STIBI_THEME_CPU_TEMP ")
     STIBI_THEME_GIT_PROMPT_WIDTH=$(calculateGitPromptWidth)
 }
 
@@ -170,8 +170,10 @@ setprompt() {
 
     ZSH_THEME_GIT_PROMPT_PREFIX="%{$FG[208]%} [git:"
     ZSH_THEME_GIT_PROMPT_SUFFIX="]%{$reset_color%}"
-    ZSH_THEME_GIT_PROMPT_DIRTY="%{$FG[001]%} %{$reset_color%}%{$FG[208]%}"
-    ZSH_THEME_GIT_PROMPT_CLEAN="%{$FG[076]%} %{$reset_color%}%{$FG[208]%}"
+    ZSH_THEME_GIT_PROMPT_DIRTY="%{$FG[001]%}  %{$reset_color%}%{$FG[208]%}"
+    ZSH_THEME_GIT_PROMPT_CLEAN="%{$FG[076]%}  %{$reset_color%}%{$FG[208]%}"
+    #ZSH_THEME_GIT_PROMPT_DIRTY="%{$FG[001]%} %{$reset_color%}%{$FG[208]%}"
+    #ZSH_THEME_GIT_PROMPT_CLEAN="%{$FG[076]%} %{$reset_color%}%{$FG[208]%}"
 
     ret_status="%(?,%{$FG[070]%}$,%{$FG[009]%}$)"
 
@@ -179,9 +181,9 @@ setprompt() {
 %{$FX[bold]%}%{$FG[208]%}%n%{$FG[250]%}@%{$FG[208]%}%m%{$FX[reset]%}\
 %{$FG[250]%}:%{$STIBI_THEME_PWD_COLOR%}\
 %$ADJUST_PWD_TO_WIDTH<...<%~%<<$(git_prompt_info)${(e)STIBI_THEME_FILLBAR} \
-%{$FG[208]%}  %{$FG[250]%}$STIBI_THEME_FREE_MEMORY \
-%{$FG[208]%}  %{$FG[250]%}$STIBI_THEME_CPU_LOAD \
-%{$FG[208]%} %{$FG[250]%}$STIBI_THEME_CPU_TEMP \
+%{$FG[208]%} %{$FG[250]%}$STIBI_THEME_FREE_MEMORY \
+%{$FG[208]%} %{$FG[250]%}$STIBI_THEME_CPU_LOAD \
+%{$FG[208]%} %{$FG[250]%}$STIBI_THEME_CPU_TEMP \
 %{$FG[123]%}%*%{$reset_color%}
 $ret_status%{$reset_color%} '
 
