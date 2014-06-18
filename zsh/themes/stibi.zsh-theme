@@ -11,6 +11,20 @@ FREE_RAM_SYMBOL=""
 CPU_LOAD_SYMBOL=""
 CPU_TEMPERATURE_SYMBOL=""
 
+BOLD="%{$FX[bold]%}"
+ORANGE="%{$FG[208]%}"
+CYAN="%{$FG[123]%}"
+GRAY="%{$FG[250]%}"
+RWPWD="%{$FG[123]%}"
+ROPWD="%{$FG[192]%}"
+
+RESETCOL="%{$reset_color%}"
+RESETFX="%{$FX[reset]%}"
+USER="${ORANGE}%n"
+MACHINE="${ORANGE}%m"
+MYPWD="%~"
+TIMESTAMP="%*"
+
 function getFreeMemory {
   local free_memory=`free -m | awk '{if (NR==3) print $4}' | xargs -i echo 'scale=1;{}/1000' | bc`"G"
   echo $free_memory
@@ -93,9 +107,9 @@ function setupMyPromptVariables {
 }
 
 function calculateVariablesWidths {
-    STIBI_THEME_PROMPT_WIDTH=$(calculateUserVisibleStringLength "%n@%m:")
-    STIBI_THEME_PWD_WIDTH=$(calculateUserVisibleStringLength "%~")
-    STIBI_THEME_TIMESTAMP_WIDTH=$(calculateUserVisibleStringLength "%*")
+    STIBI_THEME_PROMPT_WIDTH=$(calculateUserVisibleStringLength "${USER}@${MACHINE}:")
+    STIBI_THEME_PWD_WIDTH=$(calculateUserVisibleStringLength "${MYPWD}")
+    STIBI_THEME_TIMESTAMP_WIDTH=$(calculateUserVisibleStringLength "${TIMESTAMP}")
     # "X" na zacatku a nakonci je kvuli mezere pred a za, funkce ty mezery asi
     # nepocita jako viditelne znaky (TODO) takze mi to nesedlo a musel jsem
     # jinde jeste navic odecitat dvojku (viz git history)
@@ -146,9 +160,9 @@ function isPromptLongerThanTerminalWidth {
 function getColorForPwd {
     local pwdColor
     if [[ -w $PWD ]]; then
-        pwdColor="${FG[123]}"
+        pwdColor=${RWPWD}
     else
-        pwdColor="${FG[192]}"
+        pwdColor=${ROPWD}
     fi
     echo $pwdColor
 }
@@ -190,16 +204,15 @@ setprompt() {
     ret_status="%(?,%{$FG[070]%}$,%{$FG[009]%}$)"
 
     PROMPT='
-%{$FX[bold]%}%{$FG[208]%}%n%{$FG[250]%}@%{$FG[208]%}%m%{$FX[reset]%}\
-%{$FG[250]%}:%{$STIBI_THEME_PWD_COLOR%}\
-%$ADJUST_PWD_TO_WIDTH<...<%~%<<$(git_prompt_info)${(e)STIBI_THEME_FILLBAR} \
-%{$FG[208]%}$FREE_RAM_SYMBOL %{$FG[250]%}$STIBI_THEME_FREE_MEMORY \
-%{$FG[208]%}$CPU_LOAD_SYMBOL %{$FG[250]%}$STIBI_THEME_CPU_LOAD \
-%{$FG[208]%}$CPU_TEMPERATURE_SYMBOL %{$FG[250]%}$STIBI_THEME_CPU_TEMP \
-%{$FG[123]%}%*%{$reset_color%}
-$ret_status%{$reset_color%} '
+${BOLD}${USER}@${MACHINE}${RESETFX}${GRAY}:$STIBI_THEME_PWD_COLOR\
+%$ADJUST_PWD_TO_WIDTH<...<${MYPWD}%<<$(git_prompt_info)${(e)STIBI_THEME_FILLBAR} \
+${ORANGE}$FREE_RAM_SYMBOL ${GRAY}$STIBI_THEME_FREE_MEMORY \
+${ORANGE}$CPU_LOAD_SYMBOL ${GRAY}$STIBI_THEME_CPU_LOAD \
+${ORANGE}$CPU_TEMPERATURE_SYMBOL ${GRAY}$STIBI_THEME_CPU_TEMP \
+${CYAN}${TIMESTAMP}%{$reset_color%}
+$ret_status${RESETCOL} '
 
-    RPROMPT='$STIBI_THEME_BATTERY_STATUS%{$reset_color%}'
+    RPROMPT='${STIBI_THEME_BATTERY_STATUS}${RESETCOL}'
 }
 
 setprompt
