@@ -12,7 +12,9 @@ CPU_LOAD_SYMBOL=""
 CPU_TEMPERATURE_SYMBOL=""
 
 BOLD="%{$FX[bold]%}"
+RED="%{$FG[009]%}"
 ORANGE="%{$FG[208]%}"
+GREEN="%{$FG[076]%}"
 CYAN="%{$FG[123]%}"
 GRAY="%{$FG[250]%}"
 RWPWD="%{$FG[123]%}"
@@ -76,11 +78,11 @@ function getBatteryStatus() {
         elif [[ "${remainingBatteryPercent}" -lt 15 ]]; then
             # Pokud je baterka pod 15%, zobrazim misto procent zbyvajici cas
             local remainingBatteryTime="$(echo ${batteryStateFromACPI[(w)5]})"
-            batteryStatus="${FX[bold]}${FG[009]}$BATTERY_CHARGING_SYMBOL${remainingBatteryTime}"
+            batteryStatus="${BOLD}${RED}$BATTERY_CHARGING_SYMBOL${remainingBatteryTime}"
         elif [[ "${remainingBatteryPercent}" -lt 60 ]]; then
-            batteryStatus="${FG[010]}$BATTERY_CHARGING_SYMBOL${remainingBatteryPercent}%%"
+            batteryStatus="${ORANGE}$BATTERY_CHARGING_SYMBOL${remainingBatteryPercent}%%"
         elif [[ "${remainingBatteryPercent}" -lt 100 ]]; then
-            batteryStatus="${FG[040]}$BATTERY_CHARGING_SYMBOL${remainingBatteryPercent}%%"
+            batteryStatus="${GREEN}$BATTERY_CHARGING_SYMBOL${remainingBatteryPercent}%%"
         else
             batteryStatus=""
         fi
@@ -194,14 +196,12 @@ setprompt() {
     # TODO tohle dela co?
     #setopt prompt_subst
 
-    ZSH_THEME_GIT_PROMPT_PREFIX="%{$FG[208]%} [git:"
-    ZSH_THEME_GIT_PROMPT_SUFFIX="]%{$reset_color%}"
-    ZSH_THEME_GIT_PROMPT_DIRTY="%{$FG[001]%} $GIT_DIRTY_SYMBOL \
-    %{$reset_color%}%{$FG[208]%}"
-    ZSH_THEME_GIT_PROMPT_CLEAN="%{$FG[076]%} $GIT_CLEAN_SYMBOL \
-    %{$reset_color%}%{$FG[208]%}"
+    ZSH_THEME_GIT_PROMPT_PREFIX="${ORANGE} [git:"
+    ZSH_THEME_GIT_PROMPT_SUFFIX="${ORANGE}]%{$reset_color%}"
+    ZSH_THEME_GIT_PROMPT_DIRTY="${RED} $GIT_DIRTY_SYMBOL ${RESETCOL}"
+    ZSH_THEME_GIT_PROMPT_CLEAN="${GREEN} $GIT_CLEAN_SYMBOL ${RESETCOL}"
 
-    ret_status="%(?,%{$FG[070]%}$,%{$FG[009]%}$)"
+    ret_status="%(?,${GREEN}$,${RED}$)"
 
     PROMPT='
 ${BOLD}${USER}@${MACHINE}${RESETFX}${GRAY}:$STIBI_THEME_PWD_COLOR\
