@@ -27,6 +27,10 @@ MACHINE="${ORANGE}%m"
 MYPWD="%~"
 TIMESTAMP="%*"
 
+RPROMPT_SYSINFO="${ORANGE}$FREE_RAM_SYMBOL ${GRAY}$STIBI_THEME_FREE_MEMORY \
+${ORANGE}$CPU_LOAD_SYMBOL ${GRAY}$STIBI_THEME_CPU_LOAD \
+${ORANGE}$CPU_TEMPERATURE_SYMBOL ${GRAY}$STIBI_THEME_CPU_TEMP"
+
 function getFreeMemory {
   local free_memory=`free -m | awk '{if (NR==3) print $4}' | xargs -i echo 'scale=1;{}/1000' | bc`"G"
   echo $free_memory
@@ -112,28 +116,22 @@ function calculateVariablesWidths {
     STIBI_THEME_PROMPT_WIDTH=$(calculateUserVisibleStringLength "${USER}@${MACHINE}:")
     STIBI_THEME_PWD_WIDTH=$(calculateUserVisibleStringLength "${MYPWD}")
     STIBI_THEME_TIMESTAMP_WIDTH=$(calculateUserVisibleStringLength "${TIMESTAMP}")
-    # "X" na zacatku a nakonci je kvuli mezere pred a za, funkce ty mezery asi
-    # nepocita jako viditelne znaky (TODO) takze mi to nesedlo a musel jsem
-    # jinde jeste navic odecitat dvojku (viz git history)
-    # Nejsem si uplne jisty, jestli nekecam, ale myslim, ze ne.
-    # TODO vyhodit mezery z PROMPT a ty Xka tady a uvidim
-    STIBI_THEME_RSYSINFO_WIDTH=$(calculateUserVisibleStringLength "X$FREE_RAM_SYMBOL $STIBI_THEME_FREE_MEMORY $CPU_LOAD_SYMBOL $STIBI_THEME_CPU_LOAD $CPU_TEMPERATURE_SYMBOL $STIBI_THEME_CPU_TEMP ")
+    STIBI_THEME_RSYSINFO_WIDTH=$(calculateUserVisibleStringLength "${RPROMPT_SYSINFO}")
     STIBI_THEME_GIT_PROMPT_WIDTH=$(calculateGitPromptWidth)
 }
 
 function calculatePromptWidth {
+    # FIXME: nekde mi tam porad litaji dva znaky, nevim kde :(
     local promptWidth;
     (( promptWidth = $STIBI_THEME_PROMPT_WIDTH + $STIBI_THEME_TIMESTAMP_WIDTH \
         + $STIBI_THEME_PWD_WIDTH + $STIBI_THEME_RSYSINFO_WIDTH \
-        + $STIBI_THEME_GIT_PROMPT_WIDTH ))
+        + $STIBI_THEME_GIT_PROMPT_WIDTH + 2))
     echo $promptWidth
 }
 
 function calculateAdjustedPwdWidth {
     local totalTerminalWidth=$1
     local adjustedPwdWidth
-    # bez te dvojky na konci se to chovalo blbe, pri uzkem terminalu, spatne se zarovnala prava strana
-        # -1 je urcite za mezeru mezi fillbarem a [sysinfo], ale proc to chce -2 si nejsem jisty
     # Odecitam vsechno krom pwd, abych zjistil, kolik mi tam na pwd zbyde mista
     # TODO lepe zdokumentovat
     ((adjustedPwdWidth = $totalTerminalWidth - $STIBI_THEME_PROMPT_WIDTH - $STIBI_THEME_TIMESTAMP_WIDTH - $STIBI_THEME_RSYSINFO_WIDTH - $STIBI_THEME_GIT_PROMPT_WIDTH))
@@ -171,9 +169,8 @@ function getColorForPwd {
 
 function executeMyPreCmd() {
     local termwidth
+    # -1 je okraj na prave strane
     (( termwidth = ${COLUMNS} - 1 ))
-
-    # TODO jine pojmenovani maybe? Proc ten PR_ prefix?
 
     STIBI_THEME_FILLBAR=""
     ADJUST_PWD_TO_WIDTH=""
@@ -183,8 +180,6 @@ function executeMyPreCmd() {
     if isPromptLongerThanTerminalWidth $termwidth $visiblePromptWidth; then
         ADJUST_PWD_TO_WIDTH=$(calculateAdjustedPwdWidth $termwidth)
     else
-        # TODO nekde mi tam litaji dve mezery, proto ty dve -2
-        # TODO fix it
         STIBI_THEME_FILLBAR=$(getFillbarToAlignRightPromptSide $termwidth $visiblePromptWidth)
     fi
 
@@ -205,12 +200,12 @@ setprompt() {
 
     PROMPT='
 ${BOLD}${USER}@${MACHINE}${RESETFX}${GRAY}:$STIBI_THEME_PWD_COLOR\
-%$ADJUST_PWD_TO_WIDTH<...<${MYPWD}%<<$(git_prompt_info)${(e)STIBI_THEME_FILLBAR} \
-${ORANGE}$FREE_RAM_SYMBOL ${GRAY}$STIBI_THEME_FREE_MEMORY \
-${ORANGE}$CPU_LOAD_SYMBOL ${GRAY}$STIBI_THEME_CPU_LOAD \
-${ORANGE}$CPU_TEMPERATURE_SYMBOL ${GRAY}$STIBI_THEME_CPU_TEMP \
-${CYAN}${TIMESTAMP}%{$reset_color%}
-$ret_status${RESETCOL} '
+%$ADJUST_PWD_TO_WIDTH<...<${MYPWD}%<<$(git_prompt_info)\
+${(e)STIBI_THEME_FILLBAR} ${RPROMPT_SYSINFO} \
+${CYAN}${TIMESTAMP}${RESETCOL}
+${ret_status}${RESETCOL} '
+    # na konci je mezera, aby se kurzor odsadil od "$" z ret_status
+    # ret_status musi byt na novem radku, abych mel dvouradkovy prompt
 
     RPROMPT='${STIBI_THEME_BATTERY_STATUS}${RESETCOL}'
 }
