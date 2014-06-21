@@ -1,27 +1,26 @@
 # Path to your oh-my-zsh configuration.
 ZSH=$HOME/.oh-my-zsh
 
+# Workaournd for this issue: https://github.com/archlinuxfr/yaourt/issues/11
+ttyctl -f
+
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
 ZSH_THEME="stibi"
 
+if [ -f ~/.zsh_functions.sh ]; then
+    source ~/.zsh_functions.sh
+fi
+
+if [ -f ~/.zsh_aliases.sh ]; then
+    source ~/.zsh_aliases.sh
+fi
+
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-
-alias p="ping www.google.com"
-alias g="grep"
-alias gi="grep -i"
-alias beat="mplayer -playlist beat128.ogg.m3u"
-alias svim="sudo vim"
-alias reload="source ~/.zshrc"
-alias vvpn="sudo openvpn ~/vendavo.ovpn"
-alias vihosts="sudo vim /etc/hosts"
-
-alias pacman="sudo pacman"
-#alias yaourt="sudo yaourt"
 
 # Set to this to use case-sensitive completion
 # CASE_SENSITIVE="true"
@@ -49,7 +48,7 @@ alias pacman="sudo pacman"
 # much faster.
 # DISABLE_UNTRACKED_FILES_DIRTY="true"
 
-# Uncomment following line if you want to  shown in the command execution time stamp 
+# Uncomment following line if you want to  shown in the command execution time stamp
 # in the history command output. The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|
 # yyyy-mm-dd
 # HIST_STAMPS="mm/dd/yyyy"
