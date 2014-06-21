@@ -31,17 +31,17 @@ RPROMPT_SYSINFO="${ORANGE}$FREE_RAM_SYMBOL ${GRAY}$STIBI_THEME_FREE_MEMORY \
 ${ORANGE}$CPU_LOAD_SYMBOL ${GRAY}$STIBI_THEME_CPU_LOAD \
 ${ORANGE}$CPU_TEMPERATURE_SYMBOL ${GRAY}$STIBI_THEME_CPU_TEMP"
 
-function getFreeMemory {
+getFreeMemory() {
   local free_memory=`free -m | awk '{if (NR==3) print $4}' | xargs -i echo 'scale=1;{}/1000' | bc`"G"
   echo $free_memory
 }
 
-function getCpuLoad() {
+getCpuLoad() {
   local cpu_load=`uptime | grep -ohe 'load average[s:][: ].*' | awk '{ print $3 }' | tr -d ","`
   echo $cpu_load
 }
 
-function getAverageCpuTemp() {
+getAverageCpuTemp() {
     local count=0
     local sum=0
     for i in $(sensors | sed -n -r "s/^(Core).*: *\+([0-9]*)\..°.*/\2/p"); do
@@ -54,7 +54,7 @@ function getAverageCpuTemp() {
     echo $average_cpu_temp
 }
 
-function get_pwd() {
+get_pwd() {
     # TODO vysvetlit, proc nepouzivam %~
     # je to kvuli odsazeni prave casti a z %~ nezjistim, jak je ten string dlouhy
     echo "${PWD/$HOME/~}"
@@ -62,7 +62,7 @@ function get_pwd() {
 
 # Magic here !!!
 # http://stackoverflow.com/questions/10564314/count-length-of-user-visible-string-for-zsh-prompt
-function calculateUserVisibleStringLength {
+calculateUserVisibleStringLength() {
     local myString=$1
     local zero='%([BSUbfksu]|([FB]|){*})'
     local myStringWidth=${#${(S%%)myString//$~zero/}}
@@ -71,7 +71,7 @@ function calculateUserVisibleStringLength {
 
 # No need to calculate lenght of this one, because it's placed in $RPROMPT
 # and aligned by ZSH automatically
-function getBatteryStatus() {
+getBatteryStatus() {
     local batteryStatus
     local batteryStateFromACPI="$(acpi --battery 2>/dev/null)"
     local remainingBatteryPercent="$(echo ${batteryStateFromACPI[(w)4]} | sed -r 's/(^[0-9]+).*/\1/')"
@@ -96,7 +96,7 @@ function getBatteryStatus() {
     echo $batteryStatus
 }
 
-function calculateGitPromptWidth() {
+calculateGitPromptWidth() {
     # Magic here !!!
     # http://stackoverflow.com/questions/10564314/count-length-of-user-visible-string-for-zsh-prompt
     gitinfo=$(git_prompt_info)
@@ -105,14 +105,14 @@ function calculateGitPromptWidth() {
     echo $gitPromptWidth
 }
 
-function setupMyPromptVariables {
+setupMyPromptVariables() {
     STIBI_THEME_CPU_LOAD=$(getCpuLoad)
     STIBI_THEME_FREE_MEMORY=$(getFreeMemory)
     STIBI_THEME_CPU_TEMP=$(getAverageCpuTemp)
     STIBI_THEME_BATTERY_STATUS=$(getBatteryStatus)
 }
 
-function calculateVariablesWidths {
+calculateVariablesWidths() {
     STIBI_THEME_PROMPT_WIDTH=$(calculateUserVisibleStringLength "${USER}@${MACHINE}:")
     STIBI_THEME_PWD_WIDTH=$(calculateUserVisibleStringLength "${MYPWD}")
     STIBI_THEME_TIMESTAMP_WIDTH=$(calculateUserVisibleStringLength "${TIMESTAMP}")
@@ -120,7 +120,7 @@ function calculateVariablesWidths {
     STIBI_THEME_GIT_PROMPT_WIDTH=$(calculateGitPromptWidth)
 }
 
-function calculatePromptWidth {
+calculatePromptWidth() {
     # FIXME: nekde mi tam porad litaji dva znaky, nevim kde :(
     local promptWidth;
     (( promptWidth = $STIBI_THEME_PROMPT_WIDTH + $STIBI_THEME_TIMESTAMP_WIDTH \
@@ -129,7 +129,7 @@ function calculatePromptWidth {
     echo $promptWidth
 }
 
-function calculateAdjustedPwdWidth {
+calculateAdjustedPwdWidth() {
     local totalTerminalWidth=$1
     local adjustedPwdWidth
     # Odecitam vsechno krom pwd, abych zjistil, kolik mi tam na pwd zbyde mista
@@ -138,7 +138,7 @@ function calculateAdjustedPwdWidth {
     echo $adjustedPwdWidth
 }
 
-function getFillbarToAlignRightPromptSide {
+getFillbarToAlignRightPromptSide() {
     local totalTerminalWidth=$1
     local totalVisiblePromptWidth=$2
     # For debug: fillbarSymbol="─"
@@ -147,7 +147,7 @@ function getFillbarToAlignRightPromptSide {
     echo $fillbar
 }
 
-function isPromptLongerThanTerminalWidth {
+isPromptLongerThanTerminalWidth() {
     local totalTerminalWidth=$1
     local totalVisiblePromptWidth=$2
     if [[ $totalVisiblePromptWidth -gt $totalTerminalWidth ]]; then
@@ -157,7 +157,7 @@ function isPromptLongerThanTerminalWidth {
     fi
 }
 
-function getColorForPwd {
+getColorForPwd() {
     local pwdColor
     if [[ -w $PWD ]]; then
         pwdColor=${RWPWD}
@@ -167,7 +167,7 @@ function getColorForPwd {
     echo $pwdColor
 }
 
-function executeMyPreCmd() {
+executeMyPreCmd() {
     local termwidth
     # -1 je okraj na prave strane
     (( termwidth = ${COLUMNS} - 1 ))
