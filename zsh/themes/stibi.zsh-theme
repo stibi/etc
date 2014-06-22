@@ -27,10 +27,6 @@ MACHINE="${ORANGE}%m"
 MYPWD="%~"
 TIMESTAMP="%*"
 
-RPROMPT_SYSINFO="${ORANGE}$FREE_RAM_SYMBOL ${GRAY}$STIBI_THEME_FREE_MEMORY \
-${ORANGE}$CPU_LOAD_SYMBOL ${GRAY}$STIBI_THEME_CPU_LOAD \
-${ORANGE}$CPU_TEMPERATURE_SYMBOL ${GRAY}$STIBI_THEME_CPU_TEMP"
-
 getFreeMemory() {
   local free_memory=`free -m | awk '{if (NR==3) print $4}' | xargs -i echo 'scale=1;{}/1000' | bc`"G"
   echo $free_memory
@@ -96,6 +92,11 @@ getBatteryStatus() {
     echo $batteryStatus
 }
 
+getRpromptSysInfo() {
+    local rprompt_sysinfo="${ORANGE}$FREE_RAM_SYMBOL ${GRAY}$STIBI_THEME_FREE_MEMORY ${ORANGE}$CPU_LOAD_SYMBOL ${GRAY}$STIBI_THEME_CPU_LOAD ${ORANGE}$CPU_TEMPERATURE_SYMBOL ${GRAY}$STIBI_THEME_CPU_TEMP"
+    echo $rprompt_sysinfo
+}
+
 calculateGitPromptWidth() {
     # Magic here !!!
     # http://stackoverflow.com/questions/10564314/count-length-of-user-visible-string-for-zsh-prompt
@@ -110,13 +111,14 @@ setupMyPromptVariables() {
     STIBI_THEME_FREE_MEMORY=$(getFreeMemory)
     STIBI_THEME_CPU_TEMP=$(getAverageCpuTemp)
     STIBI_THEME_BATTERY_STATUS=$(getBatteryStatus)
+    STIBI_THEME_RPROMPT_SYSINFO=$(getRpromptSysInfo)
 }
 
 calculateVariablesWidths() {
     STIBI_THEME_PROMPT_WIDTH=$(calculateUserVisibleStringLength "${USER}@${MACHINE}:")
     STIBI_THEME_PWD_WIDTH=$(calculateUserVisibleStringLength "${MYPWD}")
     STIBI_THEME_TIMESTAMP_WIDTH=$(calculateUserVisibleStringLength "${TIMESTAMP}")
-    STIBI_THEME_RSYSINFO_WIDTH=$(calculateUserVisibleStringLength "${RPROMPT_SYSINFO}")
+    STIBI_THEME_RSYSINFO_WIDTH=$(calculateUserVisibleStringLength "${STIBI_THEME_RPROMPT_SYSINFO}")
     STIBI_THEME_GIT_PROMPT_WIDTH=$(calculateGitPromptWidth)
 }
 
@@ -201,7 +203,7 @@ setprompt() {
     PROMPT='
 ${BOLD}${USER}@${MACHINE}${RESETFX}${GRAY}:$STIBI_THEME_PWD_COLOR\
 %$ADJUST_PWD_TO_WIDTH<...<${MYPWD}%<<$(git_prompt_info)\
-${(e)STIBI_THEME_FILLBAR} ${RPROMPT_SYSINFO} \
+${(e)STIBI_THEME_FILLBAR} ${STIBI_THEME_RPROMPT_SYSINFO} \
 ${CYAN}${TIMESTAMP}${RESETCOL}
 ${ret_status}${RESETCOL} '
     # na konci je mezera, aby se kurzor odsadil od "$" z ret_status
