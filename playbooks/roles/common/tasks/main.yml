@@ -1,0 +1,11 @@
+---
+# Common playbook, played on all nodes
+
+#- name: Check uptime
+#  command: uptime
+#  register: uptime
+
+#- debug: msg="{{ uptime.stdout }}"
+
+- include: zsh.yml
+- include: dotfiles.yml

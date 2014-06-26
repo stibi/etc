@@ -1,0 +1,10 @@
+---
+# Setup Sublime Text 2 configuration on my workstation
+- name: ST2 configuration files
+  file: src=~/dev/projects/etc/dotfiles/{{ item.path }}
+        dest={{ item.dest }}
+        state=link
+        force=yes
+  with_items:
+    - { path: 'sublimetext2/Preferences.sublime-settings', dest: '~/.config/sublime-text-2/Packages/User/Preferences.sublime-settings' }
+    - { path: 'sublimetext2/Default\ \(Linux\).sublime-keymap', dest: '~/.config/sublime-text-2/Packages/User/Default\ \(Linux\).sublime-keymap' }

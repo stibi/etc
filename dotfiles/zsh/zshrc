@@ -64,7 +64,7 @@ source $ZSH/oh-my-zsh.sh
 
 # BACKUP - tohle tehdy fixlo problem s chefem & vagrant & vendavo oracle box buildem
 #export PATH="/home/stibi/.rvm/gems/ruby-1.9.2-p320/bin:/home/stibi/.rvm/gems/ruby-1.9.2-p320@global/bin:/home/stibi/.rvm/rubies/ruby-1.9.2-p320/bin:/home/stibi/.rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/opt/android-sdk/build-tools/19/:/opt/android-sdk/platform-tools:/opt/android-sdk/tools:/opt/java6/bin:/opt/java6/db/bin:/opt/java6/jre/bin:/usr/bin/core_perl:$ORACLE_HOME/bin:/home/stibi/bin"
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/bin:/opt/android-sdk/build-tools/19/:/opt/android-sdk/platform-tools:/opt/android-sdk/tools:/opt/java6/bin:/opt/java6/db/bin:/opt/java6/jre/bin:/usr/bin/core_perl:$ORACLE_HOME/bin:/home/stibi/bin"
+export PATH="/home/stibi/.rvm/gems/ruby-2.0.0-p353/bin:/home/stibi/.rvm/gems/ruby-2.0.0-p353@global/bin:/home/stibi/.rvm/rubies/ruby-2.0.0-p353/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/opt/android-sdk/build-tools/19/:/opt/android-sdk/platform-tools:/opt/android-sdk/tools:/opt/java6/bin:/opt/java6/db/bin:/opt/java6/jre/bin:/usr/bin/core_perl:$ORACLE_HOME/bin:/home/stibi/bin"
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
