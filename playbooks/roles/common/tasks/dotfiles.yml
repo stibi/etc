@@ -3,7 +3,11 @@
 
 # TODO the hardcoded dotfiles path is a problem
 # Maybe stop using symlink and just place the file to the location?
-- name: Symlink my dotfiles
+# TODO move items to variables
+
+#- debug: msg="hijik={{ansible_connection}}"
+
+- name: Copy dotfiles to remote machine
   copy: src=~/dev/projects/etc/dotfiles/{{ item.path }}
         dest=~/{{ item.dest }}
         force=yes
@@ -14,3 +18,19 @@
     - { path: 'zsh/zsh_aliases.sh', dest: '.zsh_aliases.sh'}
     - { path: 'zsh/zsh_functions.sh', dest: '.zsh_functions.sh'}
     - { path: 'zsh/stibi.zsh-theme', dest: '.oh-my-zsh/themes/stibi.zsh-theme'}
+  when: (ansible_connection is not defined) or (ansible_connection != 'local')
+
+
+- name: Setup dotfiles symlinks on the workstation
+  file: src=~/dev/projects/etc/dotfiles/{{ item.path }}
+        dest=~/{{ item.dest }}
+        state=link
+        force=yes
+  with_items:
+    - { path: 'vim/vimrc', dest: '.vimrc'}
+    - { path: 'git/gitconfig', dest: '.gitconfig'}
+    - { path: 'zsh/zshrc', dest: '.zshrc'}
+    - { path: 'zsh/zsh_aliases.sh', dest: '.zsh_aliases.sh'}
+    - { path: 'zsh/zsh_functions.sh', dest: '.zsh_functions.sh'}
+    - { path: 'zsh/stibi.zsh-theme', dest: '.oh-my-zsh/themes/stibi.zsh-theme'}
+  when: (ansible_connection is defined) and (ansible_connection == 'local')

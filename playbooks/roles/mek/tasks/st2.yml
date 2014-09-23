@@ -1,5 +1,8 @@
 ---
 # Setup Sublime Text 2 configuration on my workstation
+
+# TODO: add YAML specific settings
+
 - name: ST2 configuration files
   file: src=~/dev/projects/etc/dotfiles/{{ item.path }}
         dest={{ item.dest }}

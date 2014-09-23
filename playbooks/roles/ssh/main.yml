@@ -1,0 +1,7 @@
+tady uplne nevim jak to vyresit, chci udelat nekolik veci
+
+~/.ssh/config (treba na me workstation)
+
+sshd konfigurace
+
+rozdelit do vice roli, nebo v ramci jedne role ruzne tasky, co kdyz nekde nechci resit sshconfig, ale demona jo?

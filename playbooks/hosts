@@ -2,5 +2,5 @@
 localhost ansible_connection=local ansible_python_interpreter=/usr/bin/python2
 
 [myservers]
-oblacek.stibi.name ansible_ssh_user=stibi ansible_python_interpreter=/usr/bin/python2
+oblacek.stibi.name ansible_python_interpreter=/usr/bin/python2
 #malina.local ansible_python_interpreter=/usr/bin/python2
