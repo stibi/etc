@@ -91,3 +91,10 @@ export EDITOR='vim'
 . ~/bin/agent-startup.sh
 
 eval `dircolors /etc/dir_colors`
+
+# Instead of overwriting the history file, instead it appends lines. This helps if there are multiple zsh sessions, so that they don't just overwrite the history
+setopt APPEND_HISTORY
+# Each shell, as it runs a command, appends the command to the history file right away. This way, each shell has a unique history while it's running, but stores an interleaved set of history in the file. Starting a new shell or restarting my X session, results in having access to my history as I executed it previously.
+setopt INC_APPEND_HISTORY
+# If the same command is run multiple times in a row, it is only entered in history once.
+setopt HIST_IGNORE_DUPS

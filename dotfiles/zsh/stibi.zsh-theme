@@ -1,3 +1,4 @@
+#
 # stibi oh-my-zsh theme
 # http://about.stibi.name
 # martin.stiborsky@gmail.com
@@ -19,9 +20,9 @@ CYAN="%{$FG[123]%}"
 GRAY="%{$FG[250]%}"
 RWPWD="%{$FG[123]%}"
 ROPWD="%{$FG[192]%}"
-
 RESETCOL="%{$reset_color%}"
 RESETFX="%{$FX[reset]%}"
+
 USER="${ORANGE}%n"
 MACHINE="${ORANGE}%m"
 MYPWD="%~"
@@ -48,12 +49,6 @@ getAverageCpuTemp() {
     ((average_cpu_temp=$sum/$count))
     average_cpu_temp=$average_cpu_temp"°C"
     echo $average_cpu_temp
-}
-
-get_pwd() {
-    # TODO vysvetlit, proc nepouzivam %~
-    # je to kvuli odsazeni prave casti a z %~ nezjistim, jak je ten string dlouhy
-    echo "${PWD/$HOME/~}"
 }
 
 # Magic here !!!
@@ -97,15 +92,6 @@ getRpromptSysInfo() {
     echo $rprompt_sysinfo
 }
 
-calculateGitPromptWidth() {
-    # Magic here !!!
-    # http://stackoverflow.com/questions/10564314/count-length-of-user-visible-string-for-zsh-prompt
-    gitinfo=$(git_prompt_info)
-    local zero='%([BSUbfksu]|([FB]|){*})'
-    local gitPromptWidth=${#${(S%%)gitinfo//$~zero/}}
-    echo $gitPromptWidth
-}
-
 setupMyPromptVariables() {
     STIBI_THEME_CPU_LOAD=$(getCpuLoad)
     STIBI_THEME_FREE_MEMORY=$(getFreeMemory)
@@ -119,7 +105,7 @@ calculateVariablesWidths() {
     STIBI_THEME_PWD_WIDTH=$(calculateUserVisibleStringLength "${MYPWD}")
     STIBI_THEME_TIMESTAMP_WIDTH=$(calculateUserVisibleStringLength "${TIMESTAMP}")
     STIBI_THEME_RSYSINFO_WIDTH=$(calculateUserVisibleStringLength "${STIBI_THEME_RPROMPT_SYSINFO}")
-    STIBI_THEME_GIT_PROMPT_WIDTH=$(calculateGitPromptWidth)
+    STIBI_THEME_GIT_PROMPT_WIDTH=$(calculateUserVisibleStringLength "$(git_prompt_info)")
 }
 
 calculatePromptWidth() {
@@ -171,8 +157,8 @@ getColorForPwd() {
 
 executeMyPreCmd() {
     local termwidth
-    # -1 je okraj na prave strane
-    (( termwidth = ${COLUMNS} - 1 ))
+    local rightSidePadding=1
+    (( termwidth = ${COLUMNS} - ${rightSidePadding} ))
 
     STIBI_THEME_FILLBAR=""
     ADJUST_PWD_TO_WIDTH=""
@@ -190,9 +176,6 @@ executeMyPreCmd() {
 }
 
 setprompt() {
-    # TODO tohle dela co?
-    #setopt prompt_subst
-
     ZSH_THEME_GIT_PROMPT_PREFIX="${ORANGE} [git:"
     ZSH_THEME_GIT_PROMPT_SUFFIX="${ORANGE}]%{$reset_color%}"
     ZSH_THEME_GIT_PROMPT_DIRTY="${RED} $GIT_DIRTY_SYMBOL ${RESETCOL}"

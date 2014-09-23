@@ -10,3 +10,7 @@ alias pacman="sudo pacman"
 alias dfh="df -h"
 alias update="yaourt -Syua"
 #alias yaourt="sudo yaourt"
+alias fuck='sudo $(fc -ln -1)'
+
+alias drm="docker rm"
+alias dps="docker ps"
