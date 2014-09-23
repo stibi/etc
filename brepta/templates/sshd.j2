@@ -1,0 +1,42 @@
+#Copyright (C) 2013 CZ.NIC z.s.p.o. (http://www.nic.cz/)
+
+package openssh
+
+config openssh
+    list Port 2222
+    #option AddressFamily any
+    #list ListenAddress 0.0.0.0
+    #list ListenAddress ::
+    option Protocol 2
+
+    # Logging
+    #option SyslogFacility AUTH
+    #option LogLevel INFO
+
+    option PubkeyAuthentication yes
+    option AuthorizedKeysFile .ssh/authorized_keys
+    option PasswordAuthentication no
+    option PermitEmptyPasswords no
+    option ChallengeResponseAuthentication yes
+    option PermitRootLogin no
+    #option AllowGroups sshusers
+
+    # Set this to 'yes' to enable PAM authentication, account processing,
+    # and session processing. If this is enabled, PAM authentication will
+    # be allowed through the ChallengeResponseAuthentication and
+    # PasswordAuthentication.  Depending on your PAM configuration,
+    # PAM authentication via ChallengeResponseAuthentication may bypass
+    # the setting of "PermitRootLogin without-password".
+    # If you just want the PAM account and session checks to run without
+    # PAM authentication, then enable this but set PasswordAuthentication
+    # and ChallengeResponseAuthentication to 'no'.
+    # option UsePAM no
+
+    option UsePrivilegeSeparation sandbox
+
+    #list Subsystem "sftp /usr/lib/sftp-server"
+
+config match
+    option type Address
+    option match 192.168.2.*,127.0.0.1
+    option PermitRootLogin yes

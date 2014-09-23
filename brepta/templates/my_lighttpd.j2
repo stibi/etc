@@ -1,0 +1,20 @@
+server.modules += (
+    "mod_auth"
+)
+
+alias.url += (
+    "/my" => "/data/brepta-web/",
+)
+
+$HTTP["url"] =~ "^/my" {
+    dir-listing.activate   = "enable"
+    #auth.backend = "plain"
+    #auth.backend.plain.userfile = "/data/my_www.passwd"
+    #auth.require = ( "" =>
+    #    (
+    #    "method" => "digest",
+    #    "realm"  => "nas",
+    #    "require" => "valid-user",
+    #    ),
+    #)
+}

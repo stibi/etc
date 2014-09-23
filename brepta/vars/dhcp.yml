@@ -1,0 +1,11 @@
+---
+hosts:
+  - {name: "mek", mac: "10:dd:b1:db:cc:c5", ip: "192.168.2.169"}
+  - {name: "mek", mac: "88:1f:a1:1f:f0:ac", ip: "192.168.2.194"}
+  - {name: "mek", mac: "64:70:02:21:dc:47", ip: "192.168.2.170"}
+  - {name: "LenkaH-PC", mac: "00:1f:3b:4f:55:3d", ip: "192.168.2.125"}
+  - {name: "stibiho-galaxy", mac: "40:f3:08:7a:8b:fd", ip: "192.168.2.133"}
+  - {name: "malina", mac: "b8:27:eb:63:be:7f", ip: "192.168.2.134"}
+  - {name: "krabicka", mac: "a0:f3:c1:5b:cc:98", ip: "192.168.2.168"}
+  - {name: "kino", mac: "b8:27:eb:94:c7:e5", ip: "192.168.2.141"}
+  - {name: "opan6120", mac: "00:16:6f:30:a2:ed", ip: "192.168.2.197"}
