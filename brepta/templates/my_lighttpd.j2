@@ -1,10 +1,16 @@
 server.modules += (
-    "mod_auth"
+    "mod_auth", "mod_redirect"
 )
 
 alias.url += (
     "/my" => "/data/brepta-web/",
 )
+
+$HTTP["host"] =~ "^(http://[w+\.?]+)$" {
+    url.redirect  = (
+        "^/" => "%1/my/"
+    )
+}
 
 $HTTP["url"] =~ "^/my" {
     dir-listing.activate   = "enable"

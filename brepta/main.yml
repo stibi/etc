@@ -27,6 +27,7 @@
       - sudo
       - git
       - lighttpd-mod-auth
+      - lighttpd-mod-redirect
       - collectd-mod-conntrack
       - collectd-mod-cpu
       - collectd-mod-df
@@ -262,7 +263,7 @@
 
   # I hate this task. I have to upload the awk script just because this small
   # config modification :(
-  - name: Setup | AWK script for foris configuration change
+  - name: Deploy | AWK script for foris configuration change
     copy: >
       src=files/lighttpd_foris.awk
       dest=/tmp/lighttpd_foris.awk
@@ -280,7 +281,7 @@
     tags:
       - breptaweb
 
-  - name: Setup | foris url to ignore url starting with /my
+  - name: Configure | foris to ignore url starting with /my
     lineinfile: >
       dest=/etc/lighttpd/conf.d/foris.conf
       backrefs=True
@@ -290,9 +291,7 @@
     tags:
       - breptaweb
 
-  # a ted bonbonek - z localu kdy jdu na / dostanu forris, zvenku kdyz jdu na / nedostanu nic a ja bych tam chtel presmerovat na /my, jak na to?
-
-  - name: Configure | my lighttpd configuration
+  - name: Configure | my lighttpd config
     template: >
       src=templates/my_lighttpd.j2
       dest=/etc/lighttpd/conf.d/my.conf
