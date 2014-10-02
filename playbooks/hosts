@@ -1,6 +1,9 @@
-[localhost]
-localhost ansible_connection=local ansible_python_interpreter=/usr/bin/python2
+#[localhost]
+#localhost ansible_connection=local ansible_python_interpreter=/usr/bin/python2
 
-[myservers]
-oblacek.stibi.name ansible_python_interpreter=/usr/bin/python2
+#[myservers]
+#oblacek.stibi.name ansible_python_interpreter=/usr/bin/python2
 #malina.local ansible_python_interpreter=/usr/bin/python2
+
+[brepta]
+192.168.2.1 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_port=2222

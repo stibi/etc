@@ -1,18 +1,24 @@
 ---
 # Main playbook, TODO: lepsi popis :)
 
-- name: apply common configuration to all nodes
-  hosts: all
-  user: stibi
+- name: Configure my router - brepta
+  hosts: brepta
+  user: root
   roles:
-    - common
+    - brepta
+
+#- name: apply common configuration to all nodes
+#  hosts: all
+#  user: stibi
+#  roles:
+#    - common
 
 # TODO: my username definition to variables
-- name: Configure my mek
-  hosts: localhost
-  user: stibi
-  roles:
-    - mek
+#- name: Configure my mek
+#  hosts: localhost
+#  user: stibi
+#  roles:
+#    - mek
 
 #- name:
 # TODO: machine specific playbooks

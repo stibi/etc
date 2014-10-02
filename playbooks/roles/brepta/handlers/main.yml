@@ -1,0 +1,21 @@
+---
+- name: restart sshd
+  command: /etc/init.d/sshd restart
+
+- name: restart dnsmasq
+  command: /etc/init.d/dnsmasq restart
+
+- name: restart unbound
+  command: /etc/init.d/unbound restart
+
+- name: uci commit
+  command: uci commit
+
+- name: restart syslog
+  command: /etc/init.d/syslog-ng restart
+
+- name: restart lighttpd
+  command: /etc/init.d/lighttpd restart
+
+- name: restart collectd
+  command: /etc/init.d/collectd restart

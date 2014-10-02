@@ -1,0 +1,333 @@
+---
+
+  # TODO fail2ban nebo iptables reseni
+  # TODO logrotate
+  # TODO ansible modul pro openwrt init system a uci?
+  # TODO dotfiles, aliasy
+  # TODO vnstat
+  # TODO VPN
+  # TODO SSL https://www.turris.cz/forum/topic_show.pl?pid=3302
+
+- name: Install software
+  opkg: >
+    name={{ item }}
+    state=present
+    update_cache=yes
+  with_items:
+    - luci-theme-openwrt
+    - bash
+    - avahi-daemon
+    - ssmtp
+    - luci-app-ddns
+    - vim-full
+    - shadow-useradd
+    - shadow-groupadd
+    - shadow-usermod
+    - shadow-groupmod
+    - htop
+    - mc
+    - sudo
+    - git
+    - lighttpd-mod-auth
+    - lighttpd-mod-redirect
+    - collectd-mod-conntrack
+    - collectd-mod-cpu
+    - collectd-mod-df
+    - collectd-mod-disk
+    - collectd-mod-dns
+    - collectd-mod-irq
+    - collectd-mod-memory
+    - collectd-mod-ping
+    - collectd-mod-processes
+    - collectd-mod-syslog
+    - collectd-mod-tcpconns
+    - collectd-mod-uptime
+
+# po instalaci aplikaci bych mohl udelat handle s /etc/init.d/uhttpd restart
+
+# More reliable solution with uci
+- name: Configure | hostname
+  command: "uci set system.@system[0].hostname=brepta"
+  notify:
+    - uci commit
+  # lineinfile: >
+  #   dest=/etc/config/system
+  #   regexp="^    option hostname"
+  #   line="    option hostname 'brepta'"
+  #   state=present
+
+- name: Configure | services in /etc/config
+  template: >
+    src=templates/{{ item }}.j2
+    dest=/etc/config/{{ item }}
+    owner=root group=root mode=0644
+  with_items:
+    - wireless
+    - network
+    - dhcp
+    - firewall
+    - ddns
+    - rainbow
+    - sshd
+    - luci_statistics
+  notify:
+    - restart sshd
+    - restart collectd
+
+- name: Configure | SSMTP service
+  template: >
+    src=templates/ssmtp.j2
+    dest=/etc/ssmtp/ssmtp.conf
+    owner=root group=root mode=0644
+
+#- name: Setup service | SSHd
+#  service: name=sshd state=started enabled=true
+
+# Needs to be create, doesn't exist by default
+- name: Create | /etc/collectd/conf.d
+  file: >
+    path=/etc/collectd/conf.d
+    owner=root
+    group=root
+    state=directory
+  tags:
+    - data
+
+# TODO is collectd enabled?
+# TODO restart rsyslog?
+# TODO restart collectd?
+- name: Setup | CollectD rsyslog logging
+  copy: >
+    src=templates/my_collectd.j2
+    dest=/etc/collectd/conf.d/my_collectd.conf
+    owner=root group=root
+    mode="640"
+
+# 500= read (4) + execute (1) for the owner
+- name: Install | DHCP lease announce script
+  copy: >
+    src=files/dhcpScript.sh
+    dest=/usr/bin/dhcpScript.sh
+    owner=root group=root
+    mode="500"
+
+- name: Setup | DHCP lease announce script
+  lineinfile: >
+    dest=/etc/dnsmasq.conf
+    insertafter=EOF
+    regexp='^dhcp-script=/usr/bin/dhcpScript.sh'
+    line='dhcp-script=/usr/bin/dhcpScript.sh'
+    state=present
+  notify:
+    - restart dnsmasq
+
+- name: Install | Unbound include file
+  copy: >
+    src=files/unbound_include
+    dest=/etc/unbound/unbound_include
+    owner=root group=root
+
+# with ipv6 enabled, it is flooding the logs by ipv6 error messages
+- name: Setup | Disable IPv6 in Unbound
+  command: "uci add_list unbound.@unbound[0].include_path=/etc/unbound/unbound_include"
+  notify:
+    - uci commit
+    - restart unbound
+
+- name: Create | /data
+  file: >
+    path=/data
+    owner=root
+    group=root
+    state=directory
+  tags:
+    - data
+
+- name: Mount | sd card
+  mount: >
+    name=/data
+    src=/dev/mmcblk0p1
+    fstype=ext4
+    opts=rw,sync,noatime,nodiratime
+    state=mounted
+  tags:
+    - data
+
+- name: Create | /home
+  file: >
+    path=/home
+    owner=root
+    group=root
+    state=directory
+  tags:
+    - user
+
+- name: Create | sudo group
+  group: name=sudo state=present
+  tags:
+    - user
+    - sudo
+
+- name: Create | SSH users group
+  group: name=sshusers state=present
+  tags:
+      - user
+
+# pro je tohle pri kazdem playi changed?
+- name: Create | non-priviledged user
+  user: >
+    name=stibi
+    password=$1$SomeSalt$xBawkrHBE/ZSsuFbIaggx1
+    groups=users,mail,sudo,sshusers
+    append=yes
+    home=/home/stibi
+    shell=/bin/ash
+    generate_ssh_key=yes ssh_key_bits=2048
+    state=present
+  tags:
+    - user
+
+- name: Setup | non-priviledged user .profile
+  copy: >
+    src=files/stibi_profile
+    dest=/home/stibi/.profile
+    owner=stibi group=users
+  tags:
+    - user
+
+- name: Setup | SSH pubkey for non-priviledged user
+  authorized_key: >
+    user=stibi
+    key="{{ lookup('file', '/home/stibi/.ssh/id_rsa.pub') }}"
+    state=present
+  tags:
+    - user
+    - sshkeys
+
+- name: Setup | SSH pubkey for galaxy
+  authorized_key: >
+    user=stibi
+    key="{{ lookup('file', 'files/galaxy_key.pub') }}"
+    state=present
+  tags:
+    - user
+    - sshkeys
+
+# neni mi uplne jasne, proc jsem v tom regexpu musel escapovat jenom ty zavorky
+- name: Setup | Enable sudo group in sudoers
+  lineinfile: >
+    dest=/etc/sudoers
+    regexp='^#? ?%sudo ALL=\(ALL\) ALL'
+    line='%sudo ALL=(ALL) ALL'
+    validate='visudo -cf %s'
+    state=present
+  tags:
+    - user
+    - sudo
+
+- name: Enable | targetpw option for sudo
+  lineinfile: >
+    dest=/etc/sudoers
+    regexp='^#? ?Defaults targetpw'
+    line='Defaults targetpw'
+    validate='visudo -cf %s'
+    state=present
+  tags:
+    - user
+    - sudo
+
+- name: Create | SSHd logs directory
+  file: >
+    path=/var/log/sshd
+    state=directory
+    owner=root group=root
+
+- name: Create | SSHd log files
+  file: >
+    path=/var/log/sshd/{{ item }}
+    state=touch
+    owner=root group=root
+    mode=640
+  with_items:
+    - sshd_error.log
+    - sshd.log
+
+- name: Setup | create_dirs(yes) syslog option
+  lineinfile: >
+    dest=/etc/syslog-ng.conf
+    regexp="^create_dirs"
+    insertafter="^options"
+    line="\tcreate_dirs(yes);"
+    state=present
+  notify:
+    - restart syslog
+
+- name: Setup | SSHd syslog-ng logging
+  copy: >
+    src=files/syslog-ssh.conf
+    dest=/etc/syslog-ng.d/ssh.conf
+    owner=root group=root
+    mode=600
+  notify:
+    - restart syslog
+
+# I hate this task. I have to upload the awk script just because this small
+# config modification :(
+- name: Deploy | AWK script for foris configuration change
+  copy: >
+    src=files/lighttpd_foris.awk
+    dest=/tmp/lighttpd_foris.awk
+    owner=root group=root
+    mode="640"
+  tags:
+    - breptaweb
+
+# Hate #2 here - this mv things, because awk don't know in place save
+# (or I don't know about such option)
+- name: Setup | lighttpd foris listen only on a local ip address
+  shell: "awk -f /tmp/lighttpd_foris.awk /etc/lighttpd/conf.d/foris.conf > /tmp/foris.conf && mv /tmp/foris.conf /etc/lighttpd/conf.d/foris.conf"
+  notify:
+    - restart lighttpd
+  tags:
+    - breptaweb
+
+- name: Configure | foris to ignore url starting with /my
+  lineinfile: >
+    dest=/etc/lighttpd/conf.d/foris.conf
+    backrefs=True
+    state=present
+    regexp='(^    \$HTTP\["url"\] \!\~ )(?:"\^\()([/\w+\-?\w?\|?]+)(?<!/my)(?:\)" {)'
+    line='\1"^(\2|/my)" {'
+  tags:
+    - breptaweb
+
+- name: Configure | my lighttpd config
+  template: >
+    src=templates/my_lighttpd.j2
+    dest=/etc/lighttpd/conf.d/my.conf
+    owner=root group=root mode=0644
+  notify:
+    - restart lighttpd
+  tags:
+    - breptaweb
+
+# Not yet this way :(
+# - name: Deploy | static brepta web
+#   git: >
+#     repo=http://github.com/stibi/brepta-web.git
+#     dest=/data/
+#     update=yes
+#     accept_hostkey=yes
+#   notify:
+#     - restart lighttpd
+#   tags:
+#     - breptaweb
+
+- name: Deploy | static brepta web
+  copy: >
+    src=/home/stibi/dev/projects/brepta-web
+    dest=/data/
+  notify:
+    - restart lighttpd
+  tags:
+    - breptaweb

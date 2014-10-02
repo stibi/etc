@@ -1,2 +1,0 @@
-[brepta]
-192.168.2.1 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_port=2222
