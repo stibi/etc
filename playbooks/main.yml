@@ -1,6 +1,12 @@
 ---
 # Main playbook, TODO: lepsi popis :)
 
+- name: Configure my workstation - mek
+  hosts: workstation
+  user: stibi
+  roles:
+    - mek
+
 - name: Configure my router - brepta
   hosts: brepta
   user: root
