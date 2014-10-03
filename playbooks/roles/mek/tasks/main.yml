@@ -1,11 +1,13 @@
 ---
 # My mek related configuration tasks
 
+# TODO wheel s NOPASSWD v sudoers
+
 - name: Install packages
   pacman: >
     name={{ item }}
     state=present
-    sudo: True
+  sudo: True
   with_items:
     - zsh
 
@@ -15,4 +17,4 @@
     dest=~/.oh-my-zsh
     update=yes
 
-- include: st2.yml
+#- include: st2.yml

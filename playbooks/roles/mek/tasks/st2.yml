@@ -3,6 +3,12 @@
 
 # TODO: add YAML specific settings
 
+# TODO updatovat konfiguraci:
+# - Markdown editing, color schema pro default Markdown
+# - Konfigurace MarkEditing obecne
+# - pushuju dotfiles na github? Mam tam symlinky, nebo jak to funguje?
+# - Kouknout na vsechno co mam v ~/.config/sublime-text-2/Packages/User
+
 - name: ST2 configuration files
   file: >
     src=~/dev/projects/etc/dotfiles/{{ item.path }}

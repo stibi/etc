@@ -1,0 +1,10 @@
+---
+# malina configuration
+
+- name: Install packages
+  pacman: >
+    name={{ item }}
+    state=present
+  sudo: True
+  with_items:
+    - zsh

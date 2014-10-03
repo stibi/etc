@@ -1,5 +1,4 @@
 ---
-# Main playbook, TODO: lepsi popis :)
 
 - name: Configure my workstation - mek
   hosts: workstation
@@ -7,11 +6,24 @@
   roles:
     - mek
 
+# SSH connection with root user enabled from local network
 - name: Configure my router - brepta
   hosts: brepta
   user: root
   roles:
     - brepta
+
+- name: Configure raspi n1 - malina
+  hosts: malina
+  user: ansible
+  roles:
+    - malina
+
+- name: Configure oblacek server
+  hosts: oblacek
+  user: ansible
+  roles:
+    - oblacek
 
 #- name: apply common configuration to all nodes
 #  hosts: all

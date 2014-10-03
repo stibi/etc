@@ -58,7 +58,7 @@
 
 - name: Configure | services in /etc/config
   template: >
-    src=templates/{{ item }}.j2
+    src={{ item }}.j2
     dest=/etc/config/{{ item }}
     owner=root group=root mode=0644
   with_items:
@@ -75,8 +75,8 @@
     - restart collectd
 
 - name: Configure | SSMTP service
-  template: >
-    src=templates/ssmtp.j2
+  copy: >
+    src=ssmtp.conf
     dest=/etc/ssmtp/ssmtp.conf
     owner=root group=root mode=0644
 
@@ -98,7 +98,7 @@
 # TODO restart collectd?
 - name: Setup | CollectD rsyslog logging
   copy: >
-    src=templates/my_collectd.j2
+    src=my_collectd.conf
     dest=/etc/collectd/conf.d/my_collectd.conf
     owner=root group=root
     mode="640"
@@ -106,7 +106,7 @@
 # 500= read (4) + execute (1) for the owner
 - name: Install | DHCP lease announce script
   copy: >
-    src=files/dhcpScript.sh
+    src=dhcpScript.sh
     dest=/usr/bin/dhcpScript.sh
     owner=root group=root
     mode="500"
@@ -123,7 +123,7 @@
 
 - name: Install | Unbound include file
   copy: >
-    src=files/unbound_include
+    src=unbound_include
     dest=/etc/unbound/unbound_include
     owner=root group=root
 
@@ -189,7 +189,7 @@
 
 - name: Setup | non-priviledged user .profile
   copy: >
-    src=files/stibi_profile
+    src=stibi_profile
     dest=/home/stibi/.profile
     owner=stibi group=users
   tags:
@@ -207,7 +207,7 @@
 - name: Setup | SSH pubkey for galaxy
   authorized_key: >
     user=stibi
-    key="{{ lookup('file', 'files/galaxy_key.pub') }}"
+    key="{{ lookup('file', 'galaxy_key.pub') }}"
     state=present
   tags:
     - user
@@ -264,7 +264,7 @@
 
 - name: Setup | SSHd syslog-ng logging
   copy: >
-    src=files/syslog-ssh.conf
+    src=syslog-ssh.conf
     dest=/etc/syslog-ng.d/ssh.conf
     owner=root group=root
     mode=600
@@ -275,7 +275,7 @@
 # config modification :(
 - name: Deploy | AWK script for foris configuration change
   copy: >
-    src=files/lighttpd_foris.awk
+    src=lighttpd_foris.awk
     dest=/tmp/lighttpd_foris.awk
     owner=root group=root
     mode="640"
@@ -302,8 +302,8 @@
     - breptaweb
 
 - name: Configure | my lighttpd config
-  template: >
-    src=templates/my_lighttpd.j2
+  copy: >
+    src=my_lighttpd.conf
     dest=/etc/lighttpd/conf.d/my.conf
     owner=root group=root mode=0644
   notify:
