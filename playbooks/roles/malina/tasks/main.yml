@@ -46,3 +46,4 @@
 
 - include: transmission.yml
 - include: nfs.yml
+- include: avahi.yml

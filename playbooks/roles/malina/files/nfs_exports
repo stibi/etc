@@ -1,0 +1,18 @@
+# /etc/exports - exports(5) - directories exported to NFS clients
+#
+# Example for NFSv2 and NFSv3:
+#  /srv/home        hostname1(rw,sync) hostname2(ro,sync)
+# Example for NFSv4:
+#  /srv/nfs4        hostname1(rw,sync,fsid=0)
+#  /srv/nfs4/home   hostname1(rw,sync,nohide)
+# Using Kerberos and integrity checking:
+#  /srv/nfs4        *(rw,sync,sec=krb5i,fsid=0)
+#  /srv/nfs4/home   *(rw,sync,sec=krb5i,nohide)
+#
+# Use `exportfs -arv` to reload.
+
+/srv/nfs/ 192.168.2.0/24(rw,fsid=root,no_subtree_check,insecure)
+/srv/nfs/malina_disk 192.168.2.0/24(rw,no_subtree_check,nohide,insecure)
+/srv/nfs/serialy 192.168.2.0/24(rw,no_subtree_check,nohide,insecure)
+/srv/nfs/filmy 192.168.2.0/24(rw,no_subtree_check,nohide,insecure)
+/srv/nfs/torrenty 192.168.2.0/24(rw,no_subtree_check,nohide,insecure)

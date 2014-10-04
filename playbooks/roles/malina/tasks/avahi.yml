@@ -1,0 +1,17 @@
+---
+- name: Enable and start avahi-daemon.service
+  sudo: yes
+  service: >
+    name=avahi-daemon
+    enabled=yes
+    state=started
+  tags: [avahi]
+
+- name: Avahi hostname resolution
+  sudo: yes
+  lineinfile: >
+    dest=/etc/nsswitch.conf
+    regexp="^hosts"
+    line="hosts: files mdns_minimal [NOTFOUND=return] dns myhostname"
+    state=present
+  tags: [avahi]
