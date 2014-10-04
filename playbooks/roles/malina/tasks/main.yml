@@ -1,6 +1,7 @@
 ---
 # malina configuration
 
+# TODO ntpd
 # TODO nfs
 # TODO samba
 # TODO cidla
@@ -44,3 +45,4 @@
 #  hostname: name=malina
 
 - include: transmission.yml
+- include: nfs.yml

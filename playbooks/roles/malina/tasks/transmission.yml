@@ -1,7 +1,4 @@
 ---
-
-# TODO zjistit co a jak s umask
-
 - name: Enable transmission service
   sudo: yes
   service: >

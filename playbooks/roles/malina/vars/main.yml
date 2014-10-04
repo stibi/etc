@@ -1,5 +1,5 @@
 ---
-packages: [ zsh, vim, rsyslog, transmission-cli ]
+packages: [ zsh, vim, rsyslog, transmission-cli, nfs-utils ]
 transmission:
   port: 9091
   user: torrentman

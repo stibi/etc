@@ -4,3 +4,19 @@
   service: >
     name=transmission
     state=restarted
+
+- name: reload exports
+  sudo: yes
+  command: exportfs -ra
+
+- name: restart rpcbind
+  sudo: yes
+  service: >
+    name=rpcbind
+    state=restarted
+
+- name: restart nfs-server
+  sudo: yes
+  service: >
+    name=nfs-server
+    state=restarted

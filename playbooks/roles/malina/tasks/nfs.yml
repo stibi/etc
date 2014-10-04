@@ -1,0 +1,56 @@
+---
+# TODO ntp is needed to setup first
+
+- name: Enable rpcbind.service
+  sudo: yes
+  service: >
+    name=rpcbind
+    enabled=yes
+  tags: [nfs]
+
+- name: Enable nfs-server.service
+  sudo: yes
+  service: >
+    name=nfs-server
+    enabled=yes
+  tags: [nfs]
+
+- name: Create NFS shares
+  sudo: yes
+  file: >
+    path={{ item }}
+    state=directory
+    owner=stibi
+    group=users
+    mode=0755
+  with_items:
+    - /srv/nfs/malina_disk
+    - /srv/nfs/serialy
+    - /srv/nfs/filmy
+    - /srv/nfs/torrenty
+  tags: [nfs]
+
+- name: Mount NFS shares
+  sudo: yes
+  mount: >
+    src={{ item.device }}
+    name={{ item.mount_point }}
+    state=mounted
+    fstype=none
+    opts=bind
+  with_items:
+    - { device: '/mnt/usbdisk', mount_point: '/srv/nfs/malina_disk' }
+    - { device: '/mnt/usbdisk/serialy', mount_point: '/srv/nfs/serialy' }
+    - { device: '/mnt/usbdisk/filmy', mount_point: '/srv/nfs/filmy' }
+    - { device: '/mnt/usbdisk/torrents', mount_point: '/srv/nfs/torrenty' }
+  tags: [nfs]
+
+- name: Setup NFS exports
+  sudo: yes
+  copy: >
+    src=nfs_exports
+    dest=/etc/exports
+    owner=root
+    group=root
+  notify: [reload exports, restart rpcbind, restart nfs-server]
+  tags: [nfs]
