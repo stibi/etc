@@ -13,9 +13,13 @@
   roles:
     - brepta
 
-- name: Configure raspi n1 - malina
+# TODO I don't like these vars_files, any better solution?
+- name: Configure raspi - malina
   hosts: malina
   user: ansible
+  vars_files:
+    - roles/malina/vars/vault.yml
+    - roles/malina/vars/main.yml
   roles:
     - malina
 

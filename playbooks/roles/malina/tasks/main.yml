@@ -1,10 +1,46 @@
 ---
 # malina configuration
 
+# TODO nfs
+# TODO samba
+# TODO cidla
+# TODO avahi
+# TODO http server?
+# TODO rsyslog, enable service, start service
+# TODO /var/log a podobne jako tmpfs
+# TODO my user
+# TODO zakazat prihlaseni pres roota, krom lokalni site (?)
+
 - name: Install packages
   pacman: >
     name={{ item }}
     state=present
-  sudo: True
-  with_items:
-    - zsh
+  sudo: yes
+  with_items: packages
+  tags: [packages]
+
+- name: Mount USB hard-drive
+  sudo: yes
+  mount: >
+    name=/mnt/usbdisk
+    src='LABEL=usbdisk'
+    fstype=ext2
+    state=mounted
+    opts=rw,suid,exec,auto,user,async
+  tags: [data, transmission]
+
+# TODO move this to common role
+- name: Create user for me
+  sudo: yes
+  user: >
+    name=stibi
+    createhome=yes
+    state=present
+
+# TODO setup SSH keys for connection from workstation
+
+# TODO, BUG hostname module doesn't work on Archlinux, fix exists
+#- name: Setup hostname
+#  hostname: name=malina
+
+- include: transmission.yml

@@ -1,0 +1,38 @@
+---
+
+# TODO zjistit co a jak s umask
+
+- name: Enable transmission service
+  sudo: yes
+  service: >
+    name=transmission
+    enabled=yes
+  tags: [transmission]
+
+- name: Stop transmission before configuration changes
+  sudo: yes
+  service: >
+    name=transmission
+    state=stopped
+  tags: [transmission]
+
+- name: Setup download dirs permission
+  sudo: yes
+  file: >
+    state=directory
+    mode=0775
+    group=transmission
+    owner=stibi
+    recurse=yes
+    path={{ item }}
+  with_items:
+    - "{{ transmission.completed_dir }}"
+    - "{{ transmission.inprogreess_dir }}"
+
+- name: Configure transmission-daemon
+  sudo: yes
+  template: >
+    src=transmission_settings.json.j2
+    dest=/var/lib/transmission/.config/transmission-daemon/settings.json
+  notify: [restart transmission]
+  tags: [transmission]

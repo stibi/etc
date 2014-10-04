@@ -1,0 +1,6 @@
+---
+- name: restart transmission
+  sudo: yes
+  service: >
+    name=transmission
+    state=restarted
