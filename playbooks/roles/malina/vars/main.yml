@@ -1,5 +1,5 @@
 ---
-packages: [ zsh, vim, rsyslog, transmission-cli, nfs-utils, avahi, nss-mdns ]
+packages: [ zsh, vim, rsyslog, transmission-cli, nfs-utils, avahi, nss-mdns, fakeroot, binutils, yajl, gcc, make ]
 transmission:
   port: 9091
   user: torrentman

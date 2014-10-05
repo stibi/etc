@@ -1,0 +1,14 @@
+---
+- name: Check if rss2email is installed
+  command: pacman -Q rss2email
+  register: rss2email_installed
+  ignore_errors: true
+  tags: [rss2email]
+
+# TODO check for dependy to installed yaourt
+# TODO,BUG failed installation because broken python2-html2text dependency
+- name: Install rss2email from AUR with yaourt
+  sudo: yes
+  command: yaourt --noconfirm -S rss2email
+  when:
+  tags: [rss2email]

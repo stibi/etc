@@ -2,10 +2,8 @@
 # malina configuration
 
 # TODO ntpd
-# TODO nfs
 # TODO samba
 # TODO cidla
-# TODO avahi
 # TODO http server?
 # TODO rsyslog, enable service, start service
 # TODO /var/log a podobne jako tmpfs
@@ -47,3 +45,6 @@
 - include: transmission.yml
 - include: nfs.yml
 - include: avahi.yml
+- include: yaourt.yml
+# TODO failed installation because broken python2-html2text dependency
+#- include: rss2email.yml

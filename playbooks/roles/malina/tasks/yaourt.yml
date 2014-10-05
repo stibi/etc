@@ -1,0 +1,88 @@
+---
+# TODO I don't like this…nicer and cleaner solution would be great
+
+- name: Check if Yaourt is installed
+  command: pacman -Q yaourt
+  register: yaourt_installed
+  ignore_errors: true
+  tags: [yaourt]
+
+# - name: Check if package-query is installed
+#   command: pacman -Q package-query
+#   register: pkgquery_installed
+#   ignore_errors: true
+#   tags: [yaourt]
+
+- name: Download package-query and yaourt
+  get_url: >
+    url={{ item }}
+    dest=/tmp/
+  with_items:
+    - https://aur.archlinux.org/packages/pa/package-query/package-query.tar.gz
+    - https://aur.archlinux.org/packages/ya/yaourt/yaourt.tar.gz
+  when: yaourt_installed|failed
+  tags: [yaourt]
+
+- name: Unpack package-query and yaourt
+  unarchive: >
+    src={{ item }}
+    dest=/tmp/
+    copy=no
+  with_items:
+    - /tmp/package-query.tar.gz
+    - /tmp/yaourt.tar.gz
+  when: yaourt_installed|failed
+  tags: [yaourt]
+
+- name: Register package-query version
+  shell: 'grep -Eo "pkgver=([[:digit:]+\.?]+)" /tmp/package-query/PKGBUILD | cut -d= -f2'
+  register: "package_query_version"
+  when: yaourt_installed|failed
+  tags: [yaourt]
+
+- name: Register yaourt version
+  shell: 'grep -Eo "pkgver=([[:digit:]+\.?]+)" /tmp/yaourt/PKGBUILD | cut -d= -f2'
+  register: "yaourt_version"
+  when: yaourt_installed|failed
+  tags: [yaourt]
+
+# - debug: var=package_query_version
+#   when: yaourt_installed|failed
+#   tags: [yaourt]
+
+# - debug: var=yaourt_version
+#   when: yaourt_installed|failed
+#   tags: [yaourt]
+
+- name: Build package-query
+  command: makepkg -c PKGBUILD
+  args:
+    chdir: /tmp/package-query
+    creates: "/tmp/package-query/package-query-{{ package_query_version.stdout}}-1-armv6h.pkg.tar.xz"
+  when: yaourt_installed|failed
+  tags: [yaourt]
+
+- name: Install package-query
+  sudo: yes
+  command: "pacman --noconfirm -U /tmp/package-query/package-query-{{ package_query_version.stdout}}-1-armv6h.pkg.tar.xz"
+  when: yaourt_installed|failed
+  tags: [yaourt]
+
+- name: Build yaourt
+  command: makepkg -c PKGBUILD
+  args:
+    chdir: /tmp/yaourt
+    creates: "/tmp/yaourt/yaourt-{{ yaourt_version.stdout}}-1-any.pkg.tar.xz"
+  when: yaourt_installed|failed
+  tags: [yaourt]
+
+- name: Install yaourt
+  sudo: yes
+  command: "pacman --noconfirm  -U /tmp/yaourt/yaourt-{{ yaourt_version.stdout}}-1-any.pkg.tar.xz"
+  when: yaourt_installed|failed
+  tags: [yaourt]
+
+
+# - debug: msg="Yaourt neni nainstalovany"
+#   when: yaourt_installed|failed
+#   tags: [yaourt]
