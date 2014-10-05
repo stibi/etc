@@ -10,6 +10,9 @@
 - name: Configure my router - brepta
   hosts: brepta
   user: root
+  vars_files:
+    - roles/brepta/vars/vault.yml
+    - roles/brepta/vars/main.yml
   roles:
     - brepta
 

@@ -9,3 +9,18 @@ hosts:
   - {name: "krabicka", mac: "a0:f3:c1:5b:cc:98", ip: "192.168.2.168"}
   - {name: "kino", mac: "b8:27:eb:94:c7:e5", ip: "192.168.2.141"}
   - {name: "opan6120", mac: "00:16:6f:30:a2:ed", ip: "192.168.2.197"}
+turris_wifi_name: stibi_turris
+turris_wifi_pass: "{{ vaulted_turris_wifi_pass }}"
+macs:
+  - 88:1F:A1:1F:F0:AC
+  - 00:1F:3B:4F:55:3D
+  - 40:f3:08:7a:8b:fd
+  - 98:0d:2e:3b:93:4f
+  - 28:EF:01:F0:DC:F8
+  - 0C:8B:FD:7D:AA:C3
+  - A0:F3:C1:5B:CC:98
+  - 00:16:6F:30:A2:ED
+  - AC:81:12:36:A1:88
+  - 68:17:29:47:1E:9F
+  - 28:EF:01:F0:DC:F8
+  - 64:70:02:21:dc:47

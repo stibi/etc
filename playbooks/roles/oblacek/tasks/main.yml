@@ -5,6 +5,6 @@
   pacman: >
     name={{ item }}
     state=present
-  sudo: True
+  sudo: yes
   with_items:
     - zsh

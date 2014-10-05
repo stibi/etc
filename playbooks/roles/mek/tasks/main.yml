@@ -3,6 +3,9 @@
 
 # TODO wheel s NOPASSWD v sudoers
 
+- name: Setup hostname
+  hostname: name=mek
+
 - name: Install packages
   pacman: >
     name={{ item }}
