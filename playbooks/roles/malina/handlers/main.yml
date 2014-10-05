@@ -20,3 +20,9 @@
   service: >
     name=nfs-server
     state=restarted
+
+- name: restart ntpd
+  sudo: yes
+  service: >
+    name=ntpd
+    state=restarted

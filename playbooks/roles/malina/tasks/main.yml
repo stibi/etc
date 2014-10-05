@@ -48,3 +48,4 @@
 - include: yaourt.yml
 # TODO failed installation because broken python2-html2text dependency
 #- include: rss2email.yml
+- include: ntp.yml
