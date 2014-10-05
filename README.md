@@ -48,7 +48,17 @@ visudo a tam:
 
 ## Ansible Vault
 
-TODO
+### Zakódovat existující soubor:
+Řekne si to o heslo
+```
+ansible-vault encrypt roles/malina/vars/vault.yml
+```
+
+### Spuštění playbooku s Vaultem
+Heslo mám uložené v _~/.ansible_vault_pass.txt_
+```
+ansible-playbook -i mymachines --limit=malina --vault-password-file=~/.ansible_vault_pass.txt main.yml
+```
 
 ## Malina
 
