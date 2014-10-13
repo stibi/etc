@@ -1,7 +1,4 @@
 ---
-# malina configuration
-
-# TODO ntpd
 # TODO samba
 # TODO cidla
 # TODO http server?
@@ -9,6 +6,8 @@
 # TODO /var/log a podobne jako tmpfs
 # TODO my user
 # TODO zakazat prihlaseni pres roota, krom lokalni site (?)
+# TODO data z cidel forwardovat do ELK
+# TODO pushbullet notifikace pri completed transmission downloadu
 
 - name: Install packages
   pacman: >
@@ -28,14 +27,6 @@
     opts=rw,suid,exec,auto,user,async
   tags: [data, transmission]
 
-# TODO move this to common role
-- name: Create user for me
-  sudo: yes
-  user: >
-    name=stibi
-    createhome=yes
-    state=present
-
 # TODO setup SSH keys for connection from workstation
 
 # TODO, BUG hostname module doesn't work on Archlinux, fix exists
@@ -46,6 +37,5 @@
 - include: nfs.yml
 - include: avahi.yml
 - include: yaourt.yml
-# TODO failed installation because broken python2-html2text dependency
-#- include: rss2email.yml
+- include: rss2email.yml
 - include: ntp.yml

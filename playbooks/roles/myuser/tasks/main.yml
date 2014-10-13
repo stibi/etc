@@ -1,0 +1,16 @@
+---
+- name: Create user for me
+  sudo: yes
+  user: >
+    name=stibi
+    createhome=yes
+    state=present
+  tags: [user]
+
+- name: Setup SSH keys for the user
+  authorized_key: >
+    state=present
+    user=stibi
+    key="{{ lookup('file', 'stibi_at_mek_rsa.pub') }}"
+    manage_dir=yes
+  tags: [user]

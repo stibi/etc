@@ -24,6 +24,7 @@
     - roles/malina/vars/vault.yml
     - roles/malina/vars/main.yml
   roles:
+    - myuser
     - malina
 
 - name: Configure oblacek server
