@@ -5,10 +5,50 @@
   ignore_errors: true
   tags: [rss2email]
 
-# TODO check for dependy to installed yaourt
-# TODO,BUG failed installation because broken python2-html2text dependency
+# Installing python2-html2text dependency manually, because it needs to be
+# build with --nocheck option, because of this problem:
+# https://github.com/Alir3z4/html2text/issues/34
+- name: Download python2-html2text PKGBUILD tarball
+  get_url: >
+    url="https://aur.archlinux.org/packages/py/python2-html2text/python2-html2text.tar.gz"
+    dest=/tmp/
+  when: rss2email_installed|failed
+  tags: [rss2email]
+
+- name: Unpack python2-html2text
+  unarchive: >
+    src=/tmp/python2-html2text.tar.gz
+    dest=/tmp/
+    copy=no
+  when: rss2email_installed|failed
+  tags: [rss2email]
+
+- name: Register python2-html2text version
+  shell: 'grep -Eo "pkgver=([[:digit:]+\.?]+)" /tmp/python2-html2text/PKGBUILD | cut -d= -f2'
+  register: "python2_html2text_version"
+  when: rss2email_installed|failed
+  tags: [rss2email]
+
+# - debug: var=python2_html2text_version
+#   when: rss2email_installed|failed
+#   tags: [rss2email]
+
+- name: Build python2-html2text
+  command: makepkg --nocheck -c PKGBUILD
+  args:
+    chdir: /tmp/python2-html2text
+    creates: "/tmp/python2-html2text/python2-html2text-{{ python2_html2text_version.stdout }}-1-any.pkg.tar.xz"
+  when: rss2email_installed|failed
+  tags: [rss2email]
+
+- name: Install python2-html2text
+  sudo: yes
+  command: "pacman --noconfirm -U /tmp/python2-html2text/python2-html2text-{{ python2_html2text_version.stdout }}-1-any.pkg.tar.xz"
+  when: rss2email_installed|failed
+  tags: [rss2email]
+
 - name: Install rss2email from AUR with yaourt
   sudo: yes
   command: yaourt --noconfirm -S rss2email
-  when:
+  when: rss2email_installed|failed
   tags: [rss2email]
