@@ -26,3 +26,12 @@
   service: >
     name=ntpd
     state=restarted
+
+- name: start samba services
+  sudo: yes
+  service: >
+    name={{ item }}
+    state=restarted
+  with_items:
+    - smbd.service
+    - nmbd.service

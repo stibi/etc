@@ -1,8 +1,15 @@
 ---
-packages: [ zsh, vim, rsyslog, transmission-cli, nfs-utils, avahi, nss-mdns, fakeroot, binutils, yajl, gcc, make, ntp ]
+packages: [ zsh, vim, rsyslog, transmission-cli, nfs-utils, avahi, nss-mdns, fakeroot, binutils, yajl, gcc, make, ntp, samba ]
+
 transmission:
   port: 9091
   user: torrentman
   pass: "{{ vaulted_transmission_pass }}"
   completed_dir: /mnt/usbdisk/torrents/completed
   inprogreess_dir: /mnt/usbdisk/torrents/inprogress
+
+samba:
+  users:
+    - {username: "stibi", password : "{{ vaulted_stibi_pass }}"}
+    - {username: "lena", password : "{{ vaulted_lena_pass }}"}
+

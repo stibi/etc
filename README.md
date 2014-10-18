@@ -54,6 +54,11 @@ visudo a tam:
 ansible-vault encrypt roles/malina/vars/vault.yml
 ```
 
+### Editace souboru ve Vaultu
+```
+ansible-vault edit roles/malina/vars/vault.yml
+```
+
 ### Spuštění playbooku s Vaultem
 Heslo mám uložené v _~/.ansible_vault_pass.txt_
 ```

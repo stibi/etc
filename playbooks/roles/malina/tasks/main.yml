@@ -1,5 +1,4 @@
 ---
-# TODO samba
 # TODO cidla
 # TODO http server?
 # TODO rsyslog, enable service, start service
@@ -8,6 +7,7 @@
 # TODO zakazat prihlaseni pres roota, krom lokalni site (?)
 # TODO data z cidel forwardovat do ELK
 # TODO pushbullet notifikace pri completed transmission downloadu
+# TODO NFS shares announced by avahi
 
 - name: Install packages
   pacman: >
@@ -39,3 +39,4 @@
 - include: yaourt.yml
 - include: rss2email.yml
 - include: ntp.yml
+- include: samba.yml
