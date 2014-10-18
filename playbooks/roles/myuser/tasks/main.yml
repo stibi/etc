@@ -1,16 +1,48 @@
 ---
+# python2 -c 'import crypt; print crypt.crypt("terriblepassword", "$1$SomeSalt$")'
+# Don't forget to define a variable file for a host in groups_vars, with a variable "my_user_pass", defining a password for the user on a particular host
+
+- name: Create sudo group
+  sudo: yes
+  group: name=sudo state=present
+  tags: [user]
+
 - name: Create user for me
   sudo: yes
   user: >
     name=stibi
     createhome=yes
+    password={{ my_user_pass }}
+    groups=users,sudo
     state=present
   tags: [user]
 
 - name: Setup SSH keys for the user
+  sudo: yes
   authorized_key: >
     state=present
     user=stibi
     key="{{ lookup('file', 'stibi_at_mek_rsa.pub') }}"
     manage_dir=yes
   tags: [user]
+
+- name: Enable sudo for members of the sudo group
+  sudo: yes
+  lineinfile: >
+    dest=/etc/sudoers
+    regexp='^#? ?%sudo\tALL=\(ALL\) ALL'
+    line='%sudo ALL=(ALL) ALL'
+    validate='visudo -cf %s'
+    state=present
+  tags: [user]
+
+- name: Setup targetpw option for sudo
+  sudo: yes
+  lineinfile: >
+    dest=/etc/sudoers
+    regexp='^#? ?Defaults targetpw'
+    line='Defaults targetpw'
+    validate='visudo -cf %s'
+    state=present
+  tags: [user]
+

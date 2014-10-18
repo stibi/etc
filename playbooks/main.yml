@@ -14,6 +14,7 @@
     - roles/brepta/vars/vault.yml
     - roles/brepta/vars/main.yml
   roles:
+    - myuser
     - brepta
 
 # TODO I don't like these vars_files, any better solution?
@@ -31,23 +32,5 @@
   hosts: oblacek
   user: ansible
   roles:
+    - myuser
     - oblacek
-
-#- name: apply common configuration to all nodes
-#  hosts: all
-#  user: stibi
-#  roles:
-#    - common
-
-# TODO: my username definition to variables
-#- name: Configure my mek
-#  hosts: localhost
-#  user: stibi
-#  roles:
-#    - mek
-
-#- name:
-# TODO: machine specific playbooks
-# mek
-# malina
-# oblacek
