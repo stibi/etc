@@ -1,0 +1,17 @@
+[Unit]
+Description=Node-RED
+
+[Service]
+Environment="OPTIONS=--max-old-space-size=128"
+ExecStart=/usr/bin/node $OPTIONS red.js -v
+WorkingDirectory=/opt/node-red/
+User=stibi
+Group=users
+Nice=10
+SyslogIdentifier=Node-RED
+StandardOutput=syslog
+Restart=on-failure
+KillSignal=SIGINT
+
+[Install]
+WantedBy=multi-user.target

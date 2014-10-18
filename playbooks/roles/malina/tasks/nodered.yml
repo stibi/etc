@@ -1,0 +1,72 @@
+---
+- name: Load the w1 kernel modules
+  sudo: yes
+  modprobe: >
+    name={{ item }}
+    state=present
+  with_items:
+    - w1-gpio
+    - w1-therm
+  tags: [nodered]
+
+- name: Setup the w1 kernel modules to be loaded at boot
+  sudo: yes
+  copy: >
+    dest=/etc/modprobe.d/w1.conf
+    content="w1-gpio\nw1-therm\n"
+    owner=root
+    group=root
+  tags: [nodered]
+
+# Z "alarm" repository pro Archlinux ARM
+# wiring pi test:
+#   gpio -v
+#   gpio readall
+- name: Install wiringpi
+  sudo: yes
+  pacman: >
+    name=wiringpi
+    state=present
+  tags: [nodered]
+
+- name: Clone Node-RED from github
+  sudo: yes
+  git: >
+    repo=https://github.com/node-red/node-red.git
+    dest=/opt/node-red
+    accept_hostkey=yes
+  tags: [nodered]
+
+- name: Setup Node-RED permissions to be owner by my user
+  sudo: yes
+  file: >
+    dest=/opt/node-red
+    owner=stibi
+    group=users
+    state=directory
+    recurse=yes
+  tags: [nodered]
+
+- name: Install Node-RED
+  sudo: yes
+  npm: >
+    name=node-red
+    global=yes
+    production=yes
+    state=present
+  tags: [nodered]
+
+- name: Setup systemd service for Node-RED
+  sudo: yes
+  copy: >
+    src=node-red.service
+    dest=/lib/systemd/system/node-red.service
+  tags: [nodered]
+
+- name: Enable Node-RED systemd service
+  sudo: yes
+  service: >
+    name=node-red
+    enabled=yes
+    state=restarted
+  tags: [nodered]

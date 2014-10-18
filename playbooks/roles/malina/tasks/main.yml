@@ -7,7 +7,8 @@
 # TODO zakazat prihlaseni pres roota, krom lokalni site (?)
 # TODO data z cidel forwardovat do ELK
 # TODO pushbullet notifikace pri completed transmission downloadu
-# TODO NFS shares announced by avahi
+# TODO NFS shares announced by avahi
+# TODO tmpfs swap
 
 - name: Install packages
   pacman: >
@@ -40,3 +41,4 @@
 - include: rss2email.yml
 - include: ntp.yml
 - include: samba.yml
+- include: nodered.yml
