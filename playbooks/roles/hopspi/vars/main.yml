@@ -1,2 +1,4 @@
 ---
-packages: [lxde-common, lxde-icon-theme, lxdm, lxterminal, lxrandr, lxtask, openbox, zsh, vim, xf86-video-fbdev, xorg-xinit, xterm, midori, nodejs, x11vnc, ttf-dejavu, htop]
+packages: [lxde-common, lxde-icon-theme, lxdm, lxterminal, lxrandr, lxtask, openbox, zsh, vim, xf86-video-fbdev, xorg-xinit, xorg-server-utils, xterm, midori, nodejs, x11vnc, ttf-dejavu, htop]
+
+homepage: www.google.com

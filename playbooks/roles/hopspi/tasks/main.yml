@@ -60,6 +60,20 @@
     line='x11vnc -forever -display WAIT:0 -auth ~/.Xauthority -rfbauth ~/.x11vnc_passwd -logfile ~/.x11vnc.log -bg &&'
   tags: [vnc]
 
+- name: Disable display powersaving
+  sudo: yes
+  sudo_user: stibi
+  lineinfile: >
+    dest=~/.config/lxsession/LXDE/autostart
+    state=present
+    insertafter=EOF
+    line='@{{ item }}'
+  with_items:
+    - xset s off
+    - xset -dpms
+    - xset s noblank
+  tags: [kiosk]
+
 # export DISPLAY=:0.0
 - name: Setup autostart midori in kiosk mode
   sudo: yes
@@ -68,7 +82,7 @@
     dest=~/.config/lxsession/LXDE/autostart
     state=present
     insertafter=EOF
-    line='@midori -i 120 -e Fullscreen -a www.google.com -p'
+    line='@midori -e Fullscreen -a {{ homepage }} -p'
   tags: [kiosk]
 
 - name: Disable screensaver in LXDE
@@ -80,3 +94,17 @@
     regexp='^#?@xscreensaver -no-splash'
     line='#@xscreensaver -no-splash'
   tags: [kiosk]
+
+- name: Enable medium overclocking of RaspberryPi
+  sudo: yes
+  lineinfile: >
+    dest=/boot/config.txt
+    state=present
+    regexp='^#?{{ item }}'
+    line='{{ item }}'
+  with_items:
+    - arm_freq=900
+    - core_freq=333
+    - sdram_freq=450
+    - over_voltage=2
+  tags: [overclocking]
