@@ -1,0 +1,82 @@
+---
+
+# TODO modprobe & autoload w1
+# TODO fonts
+# TODO VNC
+# TODO tunelovat http přes SSH?
+# TODO jak se na tu malinu dostat z venku, když bude v siti v praci? security?
+# TODO zrusit powersave monitoru
+# TODO vyrobit pro avahi vlastni roli
+# TODO wayland/weston?
+
+- name: Install packages
+  sudo: yes
+  pacman: >
+    name={{ item }}
+    state=present
+  sudo: yes
+  with_items: packages
+  tags: [packages]
+
+- name: Start Xorg at boot
+  sudo: yes
+  copy: >
+    dest=/home/stibi/.zlogin
+    owner=stibi
+    group=users
+    content='[[ -z $DISPLAY && $XDG_VTNR -eq 1 ]] && exec startx'
+
+- name: Start LXDE
+  sudo: yes
+  copy: >
+    dest=/home/stibi/.xinitrc
+    owner=stibi
+    group=users
+    content="exec startlxde"
+
+# Proc presne type=simple?
+# Proc tam jsou dva ExecStart?
+- name: Setup autologin to virtual console
+  sudo: yes
+  copy: >
+    src=autologin.conf
+    dest=/etc/systemd/system/getty@tty1.service.d/autologin.conf
+    owner=root
+    group=root
+
+- name: Setup x11vnc password
+  sudo: yes
+  sudo_user: stibi
+  command: x11vnc -storepasswd {{ vaulted_vnc_password }} ~/.x11vnc_passwd
+  tags: [vnc]
+
+- name: Run x11vnc after login to LXD
+  sudo: yes
+  sudo_user: stibi
+  lineinfile: >
+    dest=~/.xinitrc
+    state=present
+    insertbefore=BOF
+    line='x11vnc -forever -display WAIT:0 -auth ~/.Xauthority -rfbauth ~/.x11vnc_passwd -logfile ~/.x11vnc.log -bg &&'
+  tags: [vnc]
+
+# export DISPLAY=:0.0
+- name: Setup autostart midori in kiosk mode
+  sudo: yes
+  sudo_user: stibi
+  lineinfile: >
+    dest=~/.config/lxsession/LXDE/autostart
+    state=present
+    insertafter=EOF
+    line='@midori -i 120 -e Fullscreen -a www.google.com -p'
+  tags: [kiosk]
+
+- name: Disable screensaver in LXDE
+  sudo: yes
+  sudo_user: stibi
+  lineinfile: >
+    dest=~/.config/lxsession/LXDE/autostart
+    state=present
+    regexp='^#?@xscreensaver -no-splash'
+    line='#@xscreensaver -no-splash'
+  tags: [kiosk]

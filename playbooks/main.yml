@@ -34,3 +34,14 @@
   roles:
     - myuser
     - oblacek
+
+- name: Configure raspi - hopspi
+  hosts: hopspi
+  user: ansible
+  vars_files:
+  - roles/hopspi/vars/vault.yml
+  - roles/hopspi/vars/main.yml
+  roles:
+    - myuser
+    - hopspi
+    - ds18b20-nodejs-service

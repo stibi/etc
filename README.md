@@ -25,9 +25,7 @@ $ ansible -i mymachines malina -m ping
 }
 ```
 
-## Ansible user
-
-Stejný user pro všechny hosty
+## Initial setup for Ansible ready machine
 
 ```
 useradd -m -d /home/ansible -G wheel -s /bin/sh ansible
@@ -37,13 +35,13 @@ chown ansible:ansible /home/ansible/.ssh
 chmod 0700 /home/ansible/.ssh
 
 Nakopírovat klíč přes mého usera
-(lokal) scp ~/.ssh/id_rsa.pub oblacek:~
-(@ansible) touch ~/.ssh/authorized_keys
-(@ansible) chmod 600 ~/.ssh/authorized_keys
-(@ansible) cat id_rsa.pub >> ~/.ssh/authorized_keys
+stibi@workstation$ ssh-copy-id ansible@192.168.2.243
 
+pacman -S sudo
 visudo a tam:
 %wheel ALL=(ALL) NOPASSWD: ALL
+
+pacman -S python2
 ```
 
 ## Ansible Vault
