@@ -7,17 +7,20 @@
   group: name=sudo state=present
   tags: [user]
 
-- name: Create user for me
+- name: Create non-priviledged user for me
   sudo: yes
   user: >
     name=stibi
     createhome=yes
     password={{ my_user_pass }}
+    generate_ssh_key=yes
+    ssh_key_bits=2048
     groups=users,sudo
+    shell=/usr/bin/zsh
     state=present
   tags: [user]
 
-- name: Setup SSH keys for the user
+- name: Add SSH pubkey from my workstation to authorized_keys
   sudo: yes
   authorized_key: >
     state=present
