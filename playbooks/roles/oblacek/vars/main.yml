@@ -1,0 +1,10 @@
+---
+
+# FYI stibi at mek uz pridava myuser role
+ssh_users:
+  # - hostname: mek
+  #   user: stibi
+  #   key: "{{ lookup('file', 'stibi@mek.pub') }}"
+  - hostname: hopspi
+    user: stibi
+    key: "{{ lookup('file', 'ssh_pubkeys/stibi@hopspi.pub') }}"

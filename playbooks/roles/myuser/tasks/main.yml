@@ -18,7 +18,7 @@
     groups=users,sudo
     shell=/usr/bin/zsh
     state=present
-  tags: [user]
+  tags: [user, ssh, sshkey]
 
 - name: Add SSH pubkey from my workstation to authorized_keys
   sudo: yes
@@ -33,7 +33,7 @@
   sudo: yes
   lineinfile: >
     dest=/etc/sudoers
-    regexp='^#? ?%sudo\tALL=\(ALL\) ALL'
+    regexp='^#? ?%sudo ALL=\(ALL\) ALL'
     line='%sudo ALL=(ALL) ALL'
     validate='visudo -cf %s'
     state=present

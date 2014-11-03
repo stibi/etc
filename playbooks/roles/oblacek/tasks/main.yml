@@ -1,10 +1,32 @@
 ---
-# oblacek configuration
 
+# TODO nainstalovat cron
+#   pacman -S cronie
+#   [stibi@oblacek ~]$ sudo systemctl start cronie
+#   [stibi@oblacek ~]$ sudo systemctl enable cronie
+
+# More TODO:
+#   yaourt (chce to roli, package-query zavislost, yajl taky)
+#   wget
+#   swapfile mam, viz arch wiki, ma 1G
+#   nastavit en_US locales
+
+# TODO tohle by mela byt nejaka common role, uz ji snad i nekde mam (?)
 - name: Install packages
+  sudo: yes
   pacman: >
     name={{ item }}
     state=present
-  sudo: yes
   with_items:
     - zsh
+
+# TODO dalsi adept na vlastni roli
+# FYI Pubkey patri do files/ssh_pubkeys, zapsat novou masinu/usera/klic do vars
+- name: Add SSH pubkeys
+  sudo: yes
+  authorized_key:
+    user={{ item.user }}
+    key="{{ item.key }}"
+    manage_dir=yes
+    state=present
+  with_items: ssh_users
