@@ -1,0 +1,15 @@
+[Unit]
+Description=AutoSSH for remote forwarding SSH service port
+After=network.target
+
+# -R remoteport:localhost:localport
+# -T Disable pseudo-tty allocation
+# -N Do not execute a remote command
+
+[Service]
+User=stibi
+Environment="AUTOSSH_GATETIME=0"
+ExecStart=/usr/bin/autossh -M 0 -T -N -R 3333:localhost:{{ ansible_ssh_port }} -o TCPKeepAlive=yes stibi@oblacek.stibi.name
+
+[Install]
+WantedBy=multi-user.target

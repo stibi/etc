@@ -1,0 +1,7 @@
+---
+
+- name: start autossh
+  service: >
+    name=autossh.service
+    enabled=yes
+    state=restarted

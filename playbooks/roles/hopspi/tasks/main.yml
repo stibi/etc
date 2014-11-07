@@ -1,13 +1,9 @@
 ---
 
 # TODO modprobe & autoload w1
-# TODO fonts
-# TODO VNC
-# TODO tunelovat http přes SSH?
-# TODO jak se na tu malinu dostat z venku, když bude v siti v praci? security?
+# TODO SSH remote forward security
 # TODO zrusit powersave monitoru
 # TODO vyrobit pro avahi vlastni roli
-# TODO wayland/weston?
 
 - name: Install packages
   sudo: yes
@@ -108,3 +104,14 @@
     - sdram_freq=450
     - over_voltage=2
   tags: [overclocking]
+
+# SSH bezi na portu {{ansible_ssh_port}}, takze ten port forwarding udelam i pres meho non-priviledged usera (port neni < 1000)
+- name: Setup AutoSSH systemd service
+  sudo: yes
+  template: >
+    src=autossh.service.j2
+    dest=/etc/systemd/system/autossh.service
+    owner=root
+    group=root
+  notify: start autossh
+  tags: [ssh]
