@@ -1,0 +1,11 @@
+---
+
+# TODO fail2ban nebo neco takoveho
+
+- name: SSHd configuration
+  sudo: yes
+  template: >
+    src=sshd_config.j2
+    dest=/etc/ssh/sshd_config
+  notify: restart sshd
+  tags: [ssh, sshd]

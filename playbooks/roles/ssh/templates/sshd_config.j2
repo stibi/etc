@@ -1,0 +1,14 @@
+Port {{ ansible_ssh_port }}
+
+Protocol 2
+PermitRootLogin no
+PubkeyAuthentication yes
+AuthorizedKeysFile	.ssh/authorized_keys
+PasswordAuthentication no
+PermitEmptyPasswords no
+ChallengeResponseAuthentication no
+UsePAM no
+PrintMotd no
+UsePrivilegeSeparation sandbox		# Default for new installations.
+
+#Subsystem	sftp	/usr/lib/ssh/sftp-server
