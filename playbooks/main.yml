@@ -46,3 +46,4 @@
     - hopspi
     - ssh
     - ds18b20-nodejs-service
+    - avahi

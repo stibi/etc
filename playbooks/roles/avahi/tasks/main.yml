@@ -1,0 +1,28 @@
+---
+
+- name: Install Avahi
+  sudo: yes
+  pacman: >
+    name={{ item }}
+    state=present
+  with_items:
+    - avahi
+    - nss-mdns
+  tags: [avahi]
+
+- name: Enable and start Avahi service
+  sudo: yes
+  service: >
+    name=avahi-daemon
+    enabled=yes
+    state=started
+  tags: [avahi]
+
+- name: Enable hostname resolution (.local)
+  sudo: yes
+  lineinfile: >
+    dest=/etc/nsswitch.conf
+    regexp="^hosts"
+    line="hosts: files mdns4 [NOTFOUND=return] dns myhostname"
+    state=present
+  tags: [avahi]
