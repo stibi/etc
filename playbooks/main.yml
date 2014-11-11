@@ -44,4 +44,5 @@
   roles:
     - myuser
     - hopspi
-    #- ds18b20-nodejs-service
+    - ssh
+    - ds18b20-nodejs-service

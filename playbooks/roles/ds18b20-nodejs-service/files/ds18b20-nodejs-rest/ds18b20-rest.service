@@ -1,0 +1,16 @@
+[Unit]
+Description=TODO
+After=network.target
+
+[Service]
+User=stibi
+Environment=PORT=3000
+Environment=NODE_ENV=production
+Environment=NODE_PATH=/usr/lib/node_modules/
+ExecStart=/usr/bin/node /home/stibi/ds18b20_rest/main.js
+Restart=on-failure
+StandardOutput=syslog
+SyslogIdentifier=ds18b20-rest
+
+[Install]
+WantedBy=network.target
