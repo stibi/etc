@@ -1,0 +1,19 @@
+[Unit]
+Description=AutoSSH for remote forwarding SSH service port
+After=network.target
+
+# -R remoteport:localhost:localport
+# -T Disable pseudo-tty allocation
+# -N Do not execute a remote command
+
+# ansible_ssh_port is the actual SSH port on the target machine, the port which is then forwarded to the remote host
+
+# TODO nastavit tady, at se to pousti az po network service
+
+[Service]
+User=stibi
+Environment="AUTOSSH_GATETIME=0"
+ExecStart=/usr/bin/autossh -M 0 -T -N -R {{ remote_forwarded_ssh_port }}:localhost:{{ ansible_ssh_port }} -o TCPKeepAlive=yes {{ remote_ssh_server }}
+
+[Install]
+WantedBy=multi-user.target

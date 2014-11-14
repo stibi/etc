@@ -8,3 +8,7 @@ ssh_users:
   - hostname: hopspi
     user: stibi
     key: "{{ lookup('file', 'ssh_pubkeys/stibi@hopspi.pub') }}"
+
+  - hostname: malina
+    user: stibi
+    key: "{{ lookup('file', 'ssh_pubkeys/stibi@malina.pub') }}"

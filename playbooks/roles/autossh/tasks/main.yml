@@ -1,0 +1,25 @@
+---
+# This is only about remote forwarding of a SSH port
+# Maybe I should change name of the role, to reflect the intetion better
+
+- name: Install AutoSSH
+  sudo: yes
+  pacman: >
+    name=autossh
+    state=present
+  tags: [ssh,autossh]
+
+# TODO spousti se tohle urcite az kdyz je network hotovy?
+
+# Pokud bude spusteni autossh.service failovat, je to dost mozna proto, ze SSH bezi na 22, nebo na jinem portu < 1000. Sluzba bezi pod mym non-priviledged userem, ktery na takovy port nesahne, nema prava. Takze se SSH musi premistit jinam, na port > 1000. Mam na to roli.
+
+# SSH bezi na portu {{ansible_ssh_port}}, takze ten port forwarding udelam i pres meho non-priviledged usera (port neni < 1000)
+- name: Setup AutoSSH systemd service
+  sudo: yes
+  template: >
+    src=autossh.service.j2
+    dest=/etc/systemd/system/autossh.service
+    owner=root
+    group=root
+  notify: start autossh
+  tags: [ssh,autossh]

@@ -30,3 +30,4 @@
     manage_dir=yes
     state=present
   with_items: ssh_users
+  tags: [sshkeys]

@@ -8,7 +8,7 @@ localhost ansible_connection=local ansible_python_interpreter=/usr/bin/python2
 192.168.2.1 ansible_connection=ssh ansible_ssh_user=root ansible_ssh_port=2222
 
 [malina]
-192.168.2.134 ansible_connection=ssh ansible_python_interpreter=/usr/bin/python2 ansible_ssh_user=ansible
+192.168.2.134 ansible_connection=ssh ansible_python_interpreter=/usr/bin/python2 ansible_ssh_user=ansible ansible_ssh_port=2244
 
 [oblacek]
 oblacek.stibi.name ansible_python_interpreter=/usr/bin/python2

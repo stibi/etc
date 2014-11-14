@@ -20,13 +20,14 @@
 # TODO I don't like these vars_files, any better solution?
 - name: Configure raspi - malina
   hosts: malina
-  user: ansible
   vars_files:
     - roles/malina/vars/vault.yml
     - roles/malina/vars/main.yml
   roles:
     - myuser
     - malina
+    - ssh
+    - { role: autossh, remote_forwarded_ssh_port: 4444 }
 
 - name: Configure oblacek server
   hosts: oblacek
@@ -47,3 +48,4 @@
     - ssh
     - ds18b20-nodejs-service
     - avahi
+    - { role: autossh, remote_forwarded_ssh_port: 3333 }

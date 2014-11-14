@@ -3,7 +3,7 @@
 # TODO modprobe & autoload w1
 # TODO SSH remote forward security
 # TODO zrusit powersave monitoru
-# TODO vyrobit pro avahi vlastni roli
+# TODO vyrobit pro avahi vlastni roli + pouzit roli vsude kde je treba
 
 - name: Install packages
   sudo: yes
@@ -104,14 +104,3 @@
     - sdram_freq=450
     - over_voltage=2
   tags: [overclocking]
-
-# SSH bezi na portu {{ansible_ssh_port}}, takze ten port forwarding udelam i pres meho non-priviledged usera (port neni < 1000)
-- name: Setup AutoSSH systemd service
-  sudo: yes
-  template: >
-    src=autossh.service.j2
-    dest=/etc/systemd/system/autossh.service
-    owner=root
-    group=root
-  notify: start autossh
-  tags: [ssh]
