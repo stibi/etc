@@ -7,6 +7,7 @@
   # TODO vnstat
   # TODO VPN
   # TODO SSL https://www.turris.cz/forum/topic_show.pl?pid=3302
+  # TODO pro Avahi mam roli!
 
 - name: Install software
   opkg: >
@@ -143,15 +144,15 @@
   tags:
     - data
 
-- name: Mount | sd card
-  mount: >
-    name=/data
-    src=/dev/mmcblk0p1
-    fstype=ext4
-    opts=rw,sync,noatime,nodiratime
-    state=mounted
-  tags:
-    - data
+#- name: Mount | sd card
+#  mount: >
+#    name=/data
+#    src=/dev/mmcblk0p1
+#    fstype=ext4
+#    opts=rw,sync,noatime,nodiratime
+#    state=mounted
+#  tags:
+#    - data
 
 - name: Create | /home
   file: >
@@ -174,6 +175,7 @@
       - user
 
 # pro je tohle pri kazdem playi changed?
+# TODO mam roli!
 - name: Create | non-priviledged user
   user: >
     name=stibi
@@ -323,11 +325,13 @@
 #   tags:
 #     - breptaweb
 
-- name: Deploy | static brepta web
-  copy: >
-    src=/home/stibi/dev/projects/brepta-web
-    dest=/data/
-  notify:
-    - restart lighttpd
-  tags:
-    - breptaweb
+#- name: Deploy | static brepta web
+#  copy: >
+#    src=/home/stibi/dev/projects/brepta-web
+#    dest=/data/
+#  notify:
+#    - restart lighttpd
+#  tags:
+#    - breptaweb
+
+- include: vpn.yml

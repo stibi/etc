@@ -1,0 +1,37 @@
+---
+# Presunout pak openvpn na port 21? Je to ftp port, obvykle otevreny v restricted sitich a ja ftp nepouzivam
+
+# https://www.turris.cz/doc/navody/openvpn
+
+- name: Install OpenVPN
+  opkg: >
+    name={{ item }}
+    state=present
+  with_items:
+    - openvpn-openssl
+    - openvpn-easy-rsa
+  tags: [openvpn]
+
+- name: Modify certificate vars
+  lineinfile: >
+    dest=/etc/easy-rsa/vars
+    regexp="^export {{ item.key }}="
+    line='export {{ item.key }}="{{ item.value }}"'
+    state=present
+  with_items:
+    - { key: KEY_COUNTRY, value: "CZ"}
+    - { key: KEY_PROVINCE, value: "Czech Republic"}
+    - { key: KEY_CITY, value: "Ostrava"}
+    - { key: KEY_ORG, value: "stibi.name"}
+    - { key: KEY_EMAIL, value: "martin.stiborsky@gmail.com"}
+  tags: [openvpn]
+
+- name: Setup OpenVPN service config file for OpenWRT
+  template: >
+    src=openvpn.j2
+    dest=/etc/config/openvpn
+    owner=root
+    group=root
+  tags: [openvpn]
+
+# TODO certifikáty, klíče

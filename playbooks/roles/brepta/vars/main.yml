@@ -24,3 +24,4 @@ macs:
   - 68:17:29:47:1E:9F
   - 28:EF:01:F0:DC:F8
   - 64:70:02:21:dc:47
+public_ip_address: "{{ vaulted_public_ip_address }}"

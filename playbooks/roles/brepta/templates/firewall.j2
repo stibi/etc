@@ -149,3 +149,10 @@ config rule
     option target 'ACCEPT'
     option dest_port '9091'
 
+config rule
+    option enabled '1'
+    option name 'OpenVPN'
+    option proto 'tcp'
+    option src 'wan'
+    option target 'ACCEPT'
+    option dest_port '1194'
