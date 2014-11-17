@@ -5,7 +5,6 @@
   # TODO ansible modul pro openwrt init system a uci?
   # TODO dotfiles, aliasy
   # TODO vnstat
-  # TODO VPN
   # TODO SSL https://www.turris.cz/forum/topic_show.pl?pid=3302
   # TODO pro Avahi mam roli!
 
@@ -84,7 +83,7 @@
 #- name: Setup service | SSHd
 #  service: name=sshd state=started enabled=true
 
-# Needs to be create, doesn't exist by default
+# Needs to be created, doesn't exist by default
 - name: Create | /etc/collectd/conf.d
   file: >
     path=/etc/collectd/conf.d
@@ -144,15 +143,15 @@
   tags:
     - data
 
-#- name: Mount | sd card
-#  mount: >
-#    name=/data
-#    src=/dev/mmcblk0p1
-#    fstype=ext4
-#    opts=rw,sync,noatime,nodiratime
-#    state=mounted
-#  tags:
-#    - data
+- name: Mount | sd card
+  mount: >
+    name=/data
+    src=/dev/mmcblk0p1
+    fstype=ext4
+    opts=rw,sync,noatime,nodiratime
+    state=mounted
+  tags:
+    - data
 
 - name: Create | /home
   file: >
@@ -174,6 +173,7 @@
   tags:
       - user
 
+# TODO na tohle mam roli!
 # pro je tohle pri kazdem playi changed?
 # TODO mam roli!
 - name: Create | non-priviledged user
@@ -238,6 +238,9 @@
     - user
     - sudo
 
+# TODO jenze po restartu routeru to bude v cudu (asi)
+# skript, spusteny po startu, ktery pripadne vytvori /var/log/sshd
+# uz to tu i nekde mam, ne?
 - name: Create | SSHd logs directory
   file: >
     path=/var/log/sshd
