@@ -1,8 +1,0 @@
----
-# Install common packages
-
-- pacman: update_cache=yes
-  sudo: True
-
-- pacman: name=zsh state=present
-  sudo: True

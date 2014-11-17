@@ -1,12 +1,16 @@
 ---
-# Common playbook, played on all nodes
+# TODO refactoring
+# TODO not all machines with Archlinux, pacman should not be hardcoded here
 
-#- name: Check uptime
-#  command: uptime
-#  register: uptime
+- name: Install common packages
+  pacman: >
+    name={{ item }}
+    state=present
+  with_items:
+    - git
+    - vim
+    - htop
 
-#- debug: msg="{{ uptime.stdout }}"
+# TODO vim configuration, auto coloring, etc, dotfiles thing…
 
-- include: zsh.yml
-- include: dotfiles.yml
-- include: packages.yml
+#- include: dotfiles.yml

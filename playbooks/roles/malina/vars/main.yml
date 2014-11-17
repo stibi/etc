@@ -1,5 +1,6 @@
 ---
-packages: [ zsh, vim, rsyslog, transmission-cli, nfs-utils, avahi, nss-mdns, fakeroot, binutils, yajl, gcc, make, ntp, samba, htop, nodejs, git ]
+# TODO avahi se tady instaluje? Mam roli...
+packages: [ rsyslog, transmission-cli, nfs-utils, avahi, nss-mdns, fakeroot, binutils, yajl, gcc, make, ntp, samba, nodejs ]
 
 transmission:
   port: 9091

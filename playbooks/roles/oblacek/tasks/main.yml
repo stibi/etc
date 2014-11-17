@@ -11,15 +11,6 @@
 #   swapfile mam, viz arch wiki, ma 1G
 #   nastavit en_US locales
 
-# TODO tohle by mela byt nejaka common role, uz ji snad i nekde mam (?)
-- name: Install packages
-  sudo: yes
-  pacman: >
-    name={{ item }}
-    state=present
-  with_items:
-    - zsh
-
 # TODO dalsi adept na vlastni roli
 # FYI Pubkey patri do files/ssh_pubkeys, zapsat novou masinu/usera/klic do vars
 - name: Add SSH pubkeys

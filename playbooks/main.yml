@@ -4,6 +4,7 @@
   hosts: workstation
   user: stibi
   roles:
+    - common
     - mek
 
 # SSH connection with root user enabled from local network
@@ -24,6 +25,7 @@
     - roles/malina/vars/vault.yml
     - roles/malina/vars/main.yml
   roles:
+    - common
     - myuser
     - malina
     - ssh
@@ -33,6 +35,7 @@
   hosts: oblacek
   user: ansible
   roles:
+    - common
     - myuser
     - oblacek
 
@@ -43,6 +46,7 @@
   - roles/hopspi/vars/vault.yml
   - roles/hopspi/vars/main.yml
   roles:
+    - common
     - myuser
     - hopspi
     - ssh

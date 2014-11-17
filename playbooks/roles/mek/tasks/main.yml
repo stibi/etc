@@ -6,18 +6,12 @@
 - name: Setup hostname
   hostname: name=mek
 
-- name: Install packages
+- name: Install packages on mek
   pacman: >
     name={{ item }}
     state=present
-  sudo: True
+  sudo: yes
   with_items:
-    - zsh
-
-- name: Install oh-my-zsh
-  git: >
-    repo=https://github.com/robbyrussell/oh-my-zsh.git
-    dest=~/.oh-my-zsh
-    update=yes
+    - rsyslog
 
 #- include: st2.yml

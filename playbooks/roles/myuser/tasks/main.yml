@@ -2,6 +2,51 @@
 # python2 -c 'import crypt; print crypt.crypt("terriblepassword", "$1$SomeSalt$")'
 # Don't forget to define a variable file for a host in groups_vars, with a variable "my_user_pass", defining a password for the user on a particular host
 
+# TODO ujistit se, ze zsh se neinstaluje nikde jinde, nejak jinak
+- name: Install ZSH
+  sudo: yes
+  pacman: >
+    name=zsh
+    state=present
+  tags: [user, zsh]
+
+- name: Install oh-my-zsh
+  sudo: yes
+  sudo_user: stibi
+  git: >
+    repo=https://github.com/robbyrussell/oh-my-zsh.git
+    dest=~/.oh-my-zsh
+    update=yes
+  tags: [user, zsh]
+
+- name: stat ~/.zshrc.orig
+  sudo: yes
+  sudo_user: stibi
+  stat: path=~/.zshrc.orig
+  register: zshrc_orig_stat
+  tags: [user, zsh]
+
+- name: Backup original zsh configuration
+  sudo: yes
+  sudo_user: stibi
+  command: mv ~/.zshrc ~/.zshrc.orig
+  when: not zshrc_orig_stat.stat.exists
+  tags: [user, zsh]
+
+- name: stat ~/.zshrc
+  sudo: yes
+  sudo_user: stibi
+  stat: path=~/.zshrc
+  register: zshrc_stat
+  tags: [user, zsh]
+
+- name: Create a new Zsh config from a template
+  sudo: yes
+  sudo_user: stibi
+  command: cp ~/.oh-my-zsh/templates/zshrc.zsh-template ~/.zshrc
+  when: not zshrc_stat.stat.exists
+  tags: [user, zsh]
+
 - name: Create sudo group
   sudo: yes
   group: name=sudo state=present
