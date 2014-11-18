@@ -103,17 +103,17 @@ setupMyPromptVariables() {
 calculateVariablesWidths() {
     STIBI_THEME_PROMPT_WIDTH=$(calculateUserVisibleStringLength "${USER}@${MACHINE}:")
     STIBI_THEME_PWD_WIDTH=$(calculateUserVisibleStringLength "${MYPWD}")
-    STIBI_THEME_TIMESTAMP_WIDTH=$(calculateUserVisibleStringLength "${TIMESTAMP}")
+    # Note the extra space leading the timestamp variable, this is the space separating sysinfo and timestamp in the prompt. It have to be calculated.
+    STIBI_THEME_TIMESTAMP_WIDTH=$(calculateUserVisibleStringLength " ${TIMESTAMP}")
     STIBI_THEME_RSYSINFO_WIDTH=$(calculateUserVisibleStringLength "${STIBI_THEME_RPROMPT_SYSINFO}")
     STIBI_THEME_GIT_PROMPT_WIDTH=$(calculateUserVisibleStringLength "$(git_prompt_info)")
 }
 
 calculatePromptWidth() {
-    # FIXME: nekde mi tam porad litaji dva znaky, nevim kde :(
     local promptWidth;
     (( promptWidth = $STIBI_THEME_PROMPT_WIDTH + $STIBI_THEME_TIMESTAMP_WIDTH \
         + $STIBI_THEME_PWD_WIDTH + $STIBI_THEME_RSYSINFO_WIDTH \
-        + $STIBI_THEME_GIT_PROMPT_WIDTH + 2))
+        + $STIBI_THEME_GIT_PROMPT_WIDTH ))
     echo $promptWidth
 }
 
@@ -122,7 +122,7 @@ calculateAdjustedPwdWidth() {
     local adjustedPwdWidth
     # Odecitam vsechno krom pwd, abych zjistil, kolik mi tam na pwd zbyde mista
     # TODO lepe zdokumentovat
-    ((adjustedPwdWidth = $totalTerminalWidth - $STIBI_THEME_PROMPT_WIDTH - $STIBI_THEME_TIMESTAMP_WIDTH - $STIBI_THEME_RSYSINFO_WIDTH - $STIBI_THEME_GIT_PROMPT_WIDTH))
+    (( adjustedPwdWidth = $totalTerminalWidth - $STIBI_THEME_PROMPT_WIDTH - $STIBI_THEME_TIMESTAMP_WIDTH - $STIBI_THEME_RSYSINFO_WIDTH - $STIBI_THEME_GIT_PROMPT_WIDTH ))
     echo $adjustedPwdWidth
 }
 
