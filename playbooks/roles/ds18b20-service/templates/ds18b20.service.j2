@@ -7,10 +7,11 @@ User=stibi
 Environment=PORT=3000
 Environment=NODE_ENV=production
 Environment=NODE_PATH=/usr/lib/node_modules/
-ExecStart=/usr/bin/node /home/stibi/ds18b20_rest/main.js
+Environment=DS18B20_SENSOR_ID={{ sensors.ds1820_sensor_id }}
+ExecStart=/usr/bin/node /home/stibi/ds18b20-service/main.js
 Restart=on-failure
 StandardOutput=syslog
-SyslogIdentifier=ds18b20-rest
+SyslogIdentifier=ds18b20-service
 
 [Install]
 WantedBy=network.target

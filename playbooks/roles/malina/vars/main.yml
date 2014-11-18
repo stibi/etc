@@ -14,3 +14,6 @@ samba:
     - {username: "stibi", password : "{{ vaulted_stibi_pass }}"}
     - {username: "lena", password : "{{ vaulted_lena_pass }}"}
 
+sensors:
+  ds1820_sensor_id: 28-0000060a382b
+

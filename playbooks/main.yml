@@ -18,6 +18,7 @@
     - myuser
     - brepta
 
+# TODO tady chybi avahi role, zkontrolovat i ostatni
 # TODO I don't like these vars_files, any better solution?
 - name: Configure raspi - malina
   hosts: malina
@@ -28,6 +29,7 @@
     - common
     - myuser
     - malina
+    - ds18b20-service
     - ssh
     - { role: autossh, remote_forwarded_ssh_port: 4444 }
 
@@ -50,6 +52,6 @@
     - myuser
     - hopspi
     - ssh
-    - ds18b20-nodejs-service
+    - ds18b20-service
     - avahi
     - { role: autossh, remote_forwarded_ssh_port: 3333 }

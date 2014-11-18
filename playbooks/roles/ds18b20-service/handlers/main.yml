@@ -1,0 +1,6 @@
+---
+- name: restart ds18b20
+  sudo: yes
+  service: >
+    name=ds18b20
+    state=restarted

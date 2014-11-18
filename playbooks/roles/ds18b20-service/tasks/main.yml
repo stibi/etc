@@ -1,0 +1,43 @@
+---
+
+# TODO udelat k tomu i web ksicht s teplomerem a aktualni teplotou
+# TODO auto modprobe w1-gpio a w1-therm
+
+- name: Install needed NPM dependencies
+  sudo: yes
+  npm: >
+    name={{ item }}
+    global=yes
+    production=yes
+    state=present
+  with_items:
+    - express
+    - ds18b20
+  tags: [ds18b20]
+
+- name: Deploy nodejs ds18b20-service
+  sudo: yes
+  sudo_user: stibi
+  copy: >
+    src=ds18b20-service/main.js
+    dest=/home/stibi/ds18b20-service/
+    group=users
+    owner=stibi
+  notify: restart ds18b20
+  tags: [ds18b20, ds18b20-code]
+
+- name: Deploy systemd service file for ds18b20-service
+  sudo: yes
+  template: >
+    src=ds18b20.service.j2
+    dest=/etc/systemd/system/ds18b20.service
+    group=root
+    owner=root
+  tags: [ds18b20]
+
+- name: Enable ds18b20 systemd service
+  sudo: yes
+  service: >
+    name=ds18b20
+    enabled=yes
+  tags: [ds18b20]
