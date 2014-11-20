@@ -13,18 +13,17 @@
     state=stopped
   tags: [transmission]
 
+# The "2" in mode is setgid
 - name: Setup download dirs permission
   sudo: yes
   file: >
     state=directory
-    mode=0775
-    group=transmission
+    mode=2777
+    group=users
     owner=stibi
     recurse=yes
-    path={{ item }}
-  with_items:
-    - "{{ transmission.completed_dir }}"
-    - "{{ transmission.inprogreess_dir }}"
+    path={{ transmission.torrents_dir }}
+  tags: [transmission]
 
 - name: Configure transmission-daemon
   sudo: yes
