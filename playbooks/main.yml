@@ -15,6 +15,7 @@
     - roles/brepta/vars/vault.yml
     - roles/brepta/vars/main.yml
   roles:
+    - common
     - myuser
     - brepta
 

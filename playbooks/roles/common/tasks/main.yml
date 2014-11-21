@@ -1,16 +1,17 @@
 ---
-# TODO refactoring
-# TODO not all machines with Archlinux, pacman should not be hardcoded here
 
 - name: Install common packages
-  pacman: >
+  sudo: yes
+  action: >
+    {{ ansible_pkg_mgr }}
     name={{ item }}
     state=present
   with_items:
     - git
     - vim
     - htop
+    - mc
+  tags: [common-packages]
 
 # TODO vim configuration, auto coloring, etc, dotfiles thing…
-
 #- include: dotfiles.yml
