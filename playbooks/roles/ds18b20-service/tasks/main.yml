@@ -1,7 +1,25 @@
 ---
 
 # TODO udelat k tomu i web ksicht s teplomerem a aktualni teplotou
-# TODO auto modprobe w1-gpio a w1-therm
+
+- name: Load the w1 kernel modules
+  sudo: yes
+  modprobe: >
+    name={{ item }}
+    state=present
+  with_items:
+    - w1-gpio
+    - w1-therm
+  tags: [ds18b20]
+
+- name: Setup the w1 kernel modules to be loaded at boot
+  sudo: yes
+  copy: >
+    dest=/etc/modules-load.d/w1.conf
+    content="w1-gpio\nw1-therm\n"
+    owner=root
+    group=root
+  tags: [ds18b20]
 
 - name: Install needed NPM dependencies
   sudo: yes

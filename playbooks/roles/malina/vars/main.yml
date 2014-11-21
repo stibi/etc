@@ -10,9 +10,10 @@ transmission:
   completed_dir: /mnt/usbdisk/torrents/completed
   inprogreess_dir: /mnt/usbdisk/torrents/inprogress
 
+# TODO stibi user uz tam je, diky myuser roli, takhle bych ho akorat prepsal
 samba:
   users:
-    - {username: "stibi", password : "{{ vaulted_stibi_pass }}"}
+    #- {username: "stibi", password : "{{ vaulted_stibi_pass }}"}
     - {username: "lena", password : "{{ vaulted_lena_pass }}"}
 
 sensors:

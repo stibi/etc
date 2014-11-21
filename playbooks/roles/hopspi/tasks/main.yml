@@ -1,6 +1,5 @@
 ---
 
-# TODO modprobe & autoload w1
 # TODO SSH remote forward security
 # TODO zrusit powersave monitoru
 # TODO vyrobit pro avahi vlastni roli + pouzit roli vsude kde je treba

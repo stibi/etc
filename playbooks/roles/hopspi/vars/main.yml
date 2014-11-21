@@ -1,4 +1,5 @@
 ---
 packages: [lxde-common, lxde-icon-theme, lxdm, lxterminal, lxrandr, lxtask, openbox, xf86-video-fbdev, xorg-xinit, xorg-server-utils, xterm, midori, nodejs, x11vnc, ttf-dejavu]
-
 homepage: www.google.com
+sensors:
+  ds1820_sensor_id: 28-000006089e8e

@@ -1,4 +1,10 @@
 ---
+
+# 28-0000060a382b Prvni cidlo (pokoj)
+# 28-000003e6bef1 Waterproof cidlo (balkon)
+
+# TODO node-red ze syslogu sypat do ELK
+
 - name: Load the w1 kernel modules
   sudo: yes
   modprobe: >
@@ -12,7 +18,7 @@
 - name: Setup the w1 kernel modules to be loaded at boot
   sudo: yes
   copy: >
-    dest=/etc/modprobe.d/w1.conf
+    dest=/etc/modules-load.d/w1.conf
     content="w1-gpio\nw1-therm\n"
     owner=root
     group=root

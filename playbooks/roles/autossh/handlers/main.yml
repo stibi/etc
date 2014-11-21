@@ -1,6 +1,7 @@
 ---
 
 - name: start autossh
+  sudo: yes
   service: >
     name=autossh.service
     enabled=yes
