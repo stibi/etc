@@ -26,6 +26,8 @@
     - sudo
     - lighttpd-mod-auth
     - lighttpd-mod-redirect
+    - collectd-mod-network
+    - collectd-mod-wireless
     - collectd-mod-conntrack
     - collectd-mod-cpu
     - collectd-mod-df
@@ -210,7 +212,6 @@
     - user
     - sshkeys
 
-# neni mi uplne jasne, proc jsem v tom regexpu musel escapovat jenom ty zavorky
 - name: Setup | Enable sudo group in sudoers
   lineinfile: >
     dest=/etc/sudoers
@@ -282,7 +283,7 @@
   tags:
     - breptaweb
 
-# Hate #2 here - this mv things, because awk don't know in place save
+# Hate #2 here - this mv thing, because awk don't know in place save
 # (or I don't know about such option)
 - name: Setup | lighttpd foris listen only on a local ip address
   shell: "awk -f /tmp/lighttpd_foris.awk /etc/lighttpd/conf.d/foris.conf > /tmp/foris.conf && mv /tmp/foris.conf /etc/lighttpd/conf.d/foris.conf"
@@ -310,6 +311,23 @@
     - restart lighttpd
   tags:
     - breptaweb
+
+- name: Add majordomo to /etc/config/updater
+  lineinfile: >
+    dest=/etc/config/updater
+    insertafter="^\tlist"
+    line="        list lists 'majordomo'"
+    state=present
+  tags: [majordomo]
+
+# TODO use backrefs
+- name: Configure data storage for majormodo on the sdcard
+  lineinfile: >
+    dest=/etc/config/majordomo
+    regexp="^\toption 'path'"
+    line="        option 'path' '/data/majordomo_db'"
+    state=present
+  tags: [majordomo]
 
 # Not yet this way :(
 # - name: Deploy | static brepta web
