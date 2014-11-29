@@ -1,6 +1,8 @@
 # Path to your oh-my-zsh configuration.
 ZSH=$HOME/.oh-my-zsh
 
+TERM="screen-256color"
+
 # Workaournd for this issue: https://github.com/archlinuxfr/yaourt/issues/11
 ttyctl -f
 
@@ -8,7 +10,7 @@ ttyctl -f
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
-ZSH_THEME="stibi"
+ZSH_THEME="stibi_tmux"
 
 if [ -f ~/.zsh_functions.sh ]; then
     source ~/.zsh_functions.sh
@@ -26,7 +28,7 @@ fi
 # CASE_SENSITIVE="true"
 
 # Uncomment this to disable bi-weekly auto-update checks
-# DISABLE_AUTO_UPDATE="true"
+DISABLE_AUTO_UPDATE="true"
 
 # Uncomment to change how often before auto-updates occur? (in days)
 # export UPDATE_ZSH_DAYS=13
