@@ -15,6 +15,7 @@ set $mod Mod4
 # is used in the bar {} block below.
 # This font is widely installed, provides lots of unicode glyphs, right-to-left
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
+# Zkusit oxygen?
 font pango:DejaVu Sans Mono 8
 # Before i3 v4.8, we used to recommend this one as the default:
 # font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
@@ -40,10 +41,10 @@ bindsym $mod+d exec dmenu_run
 # bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
 
 # change focus
-bindsym $mod+j focus left
-bindsym $mod+k focus down
-bindsym $mod+l focus up
-bindsym $mod+semicolon focus right
+#bindsym $mod+j focus left
+#bindsym $mod+k focus down
+#bindsym $mod+l focus up
+#bindsym $mod+semicolon focus right
 
 # alternatively, you can use the cursor keys:
 bindsym $mod+Left focus left
@@ -52,10 +53,10 @@ bindsym $mod+Up focus up
 bindsym $mod+Right focus right
 
 # move focused window
-bindsym $mod+Shift+j move left
-bindsym $mod+Shift+k move down
-bindsym $mod+Shift+l move up
-bindsym $mod+Shift+semicolon move right
+#bindsym $mod+Shift+j move left
+#bindsym $mod+Shift+k move down
+#bindsym $mod+Shift+l move up
+#bindsym $mod+Shift+semicolon move right
 
 # alternatively, you can use the cursor keys:
 bindsym $mod+Shift+Left move left
@@ -74,7 +75,7 @@ bindsym $mod+f fullscreen
 
 # change container layout (stacked, tabbed, toggle split)
 bindsym $mod+s layout stacking
-bindsym $mod+w layout tabbed
+bindsym $mod+t layout tabbed
 bindsym $mod+e layout toggle split
 
 # toggle tiling / floating
@@ -128,10 +129,10 @@ mode "resize" {
         # Pressing right will grow the window’s width.
         # Pressing up will shrink the window’s height.
         # Pressing down will grow the window’s height.
-        bindsym j resize shrink width 10 px or 10 ppt
-        bindsym k resize grow height 10 px or 10 ppt
-        bindsym l resize shrink height 10 px or 10 ppt
-        bindsym semicolon resize grow width 10 px or 10 ppt
+        bindsym h resize shrink width 10 px or 10 ppt
+        bindsym j resize grow height 10 px or 10 ppt
+        bindsym k resize shrink height 10 px or 10 ppt
+        bindsym l resize grow width 10 px or 10 ppt
 
         # same bindings, but for the arrow keys
         bindsym Left resize shrink width 10 px or 10 ppt
@@ -154,3 +155,44 @@ bar {
 
 # Network manager
 #exec --no-startup-id nm-applet
+
+exec_always --no-startup-id feh --bg-scale ~/Dropbox/wallpapers/iss1440.jpg
+exec --no-startup-id /home/stibi/bin/agent-startup.sh
+
+# scratchpad
+bindsym $mod+period move scratchpad
+bindsym $mod+comma scratchpad show
+# To switch back to the previously focused workspace
+# TODO vyzkouset, protoze moc nevim jak to funguje
+bindsym $mod+b workspace back_and_forth
+bindsym $mod+Shift+b move container to workspace back_and_forth
+bindsym $mod+n workspace next
+bindsym $mod+p workspace prev
+
+# startup google chromium
+bindsym $mod+G exec --no-startup-id chromium
+
+# screen brightness
+##bindsym XF86MonBrightnessDown exec --no-startup-id "cd /sys/class/backlight/gmux_backlight/; cur=$(cat brightness); cur=$((cur-20)) ; if [ $cur -lt 1 ]; then cur=5; fi; echo $cur | sudo tee brightness "
+#bindsym XF86MonBrightnessDown exec --no-startup-id "xbacklight -dec 1"
+
+##bindsym XF86MonBrightnessUp   exec --no-startup-id "cd /sys/class/backlight/gmux_backlight/; cur=$(cat brightness); cur=$((cur+20)) ; if [ $cur -gt 1023 ]; then cur=1023; fi; echo $cur | sudo tee brightness "
+#bindsym XF86MonBrightnessUp   exec --no-startup-id "xbacklight -inc 1"
+
+#kebyboard LED  brightness
+#bindsym XF86KbdBrightnessDown exec --no-startup-id "cd /sys/class/leds/smc::kbd_backlight; cur=$(cat brightness); cur=$((cur-5)); if [ $cur -lt 0 ]; then cur=0; fi; echo $cur | sudo tee brightness "
+#bindsym XF86KbdBrightnessUp   exec --no-startup-id "cd /sys/class/leds/smc::kbd_backlight; cur=$(cat brightness); cur=$((cur+5)); if [ $cur -gt 255 ]; then cur=255; fi; echo $cur | sudo tee brightness "
+
+#volume adjustment
+#bindsym XF86AudioRaiseVolume exec --no-startup-id "amixer sset Master unmute;  amixer sset Master 2%+ "
+#bindsym XF86AudioLowerVolume exec --no-startup-id "amixer sset Master unmute ; amixer sset Master 2%- "
+#bindsym XF86AudioMute   exec --no-startup-id amixer sset Master toggle
+
+##set $sink alsa_output.pci-0000_00_1b.0.analog-stereo
+##bindsym XF86AudioRaiseVolume exec --no-startup-id "pactl set-sink-mute $sink 0; pactl set-sink-volume $sink +2% "
+##bindsym XF86AudioLowerVolume exec --no-startup-id "pactl set-sink-mute $sink 0; pactl set-sink-volume $sink -- -2% "
+##bindsym XF86AudioMute exec --no-startup-id "pactl set-sink-mute $sink toggle "
+
+# Startup
+#exec pulseaudio --start
+exec dropboxd
