@@ -1,27 +1,58 @@
-Xft.autohint: 0
-Xft.lcdfilter:  lcddefault
-Xft.hintstyle:  hintfull
-Xft.hinting: 1
-Xft.antialias: 1
-Xft.rgba: rgb
+Xft*dpi: 96
+Xft*antialias: false
+Xft*hinting: true
+Xft*hintstyle: hintslight
+Xft*rgba: rgb
+Xft*autohint: 0
+Xft*lcdfilter: lcddefault
 
 ! Compile xft: Attempt to find a visual with the given bit depth; option
 ! URxvt*depth: bitdepth
+URxvt*depth: 32
 
 ! Compile xft: Turn on/off double-buffering for xft (default enabled).
 ! URxvt*buffered: boolean
 
 ! Create the window with the specified X window geometry [default
-! URxvt*geometry: geom
+URxvt*geometry: 80x36
 
-! Use the specified colour as the windows background colour [default
-! URxvt*background: colour
+*background: #002b36
+*foreground: #C1C9CA
+*cursorColor: #93a1a1
+*pointerColorBackground: #586e75
+*pointerColorForeground: #93a1a1
 
-! Use the specified colour as the windows foreground colour [default
-! URxvt*foreground: colour
+!! black dark/light
+*color0: #073642
+*color8: #002b36
 
-! Use the specified colour for the colour value n, where 0-7 corresponds
-! URxvt*colorn: colour
+!! red dark/light
+*color1: #dc322f
+*color9: #cb4b16
+
+!! green dark/light
+*color2: #859900
+*color10: #586e75
+
+!! yellow dark/light
+*color3: #b58900
+*color11: #657b83
+
+!! blue dark/light
+*color4: #268bd2
+*color12: #839496
+
+!! magenta dark/light
+*color5: #d33682
+*color13: #6c71c4
+
+!! cyan dark/light
+*color6: #2aa198
+*color14: #93a1a1
+
+!! white dark/light
+*color7: #eee8d5
+*color15: #fdf6e3
 
 !
 ! URxvt*colorBD: colour
@@ -30,7 +61,7 @@ Xft.rgba: rgb
 ! URxvt*colorIT: colour
 
 ! Use the specified colour to display underlined characters when the
-! URxvt*colorUL: colour
+URxvt.colorUL: #7f7f7f
 
 ! If set, use the specified colour as the colour for the underline
 ! URxvt*underlineColor: colour
@@ -64,6 +95,7 @@ Xft.rgba: rgb
 
 ! Set the application icon pixmap; option -icon.
 ! URxvt*iconFile: file
+URxvt*iconFile: /usr/share/icons/KFaenza/apps/scalable/terminal.svg
 
 ! Use the specified colour for the scrollbar [default #B2B2B2].
 ! URxvt*scrollColor: colour
@@ -74,16 +106,13 @@ Xft.rgba: rgb
 ! The colour of the border around the text area and between the
 ! URxvt*borderColor: colour
 
-! Select the fonts to be used. This is a comma separated list of font
-! URxvt*font: fontlist
+! Font configuration
+URxvt*font: xft:UbuntuMono:medium:pixelsize=16:autohint=true
+URxvt*boldFont: xft:UbuntuMono:bold:pixelsize=16:autohint=true
+URxvt*boldItalicFont: xft:UbuntuMono:italic:pixelsize=16:autohint=true
 
-! URxvt*boldFont: fontlist
-
-!
-! URxvt*italicFont: fontlist
-
-! The font list to use for displaying bold, italic or bold italic
-! URxvt*boldItalicFont: fontlist
+! Important one
+URxvt*letterSpace: -1
 
 ! When font styles are not enabled, or this option is enabled (True,
 ! URxvt*intensityStyles: boolean
@@ -104,7 +133,7 @@ Xft.rgba: rgb
 ! URxvt*visualBell: boolean
 
 ! True: start as a login shell by prepending a - to argv[0] of the
-! URxvt*loginShell: boolean
+URxvt.loginShell: true
 
 ! True: inhibit writing record into the system log file utmp; option
 ! URxvt*utmpInhibit: boolean
@@ -113,7 +142,7 @@ Xft.rgba: rgb
 ! URxvt*print-pipe: string
 
 ! Set scrollbar style to rxvt, plain, next or xterm. plain is the
-! URxvt*scrollstyle: mode
+URxvt*scrollstyle: rxvt
 
 ! Set the scrollbar width in pixels.
 ! URxvt*thickness: number
@@ -122,7 +151,7 @@ Xft.rgba: rgb
 ! URxvt*scrollBar: boolean
 
 ! True: place the scrollbar on the right of the window; option -sr.
-! URxvt*scrollBar_right: boolean
+URxvt*scrollBar_right: true
 
 ! True: display an rxvt scrollbar without a trough; option -st.  False:
 ! URxvt*scrollBar_floating: boolean
@@ -140,10 +169,11 @@ Xft.rgba: rgb
 ! URxvt*scrollTtyKeypress: boolean
 
 ! Save number lines in the scrollback buffer [default 64]. This resource
-! URxvt*saveLines: number
+! TODO mozna moc? Kolik maji ostatni?
+URxvt*saveLines: 500
 
 ! Internal border of number pixels. This resource is limited to 100;
-! URxvt*internalBorder: number
+URxvt*internalBorder: 3
 
 ! External border of number pixels. This resource is limited to 100;
 ! URxvt*externalBorder: number
@@ -155,10 +185,10 @@ Xft.rgba: rgb
 ! URxvt*skipBuiltinGlyphs: boolean
 
 ! Specifies the terminal type name to be set in the TERM environment
-! URxvt*termName: termname
+URxvt.termName: rxvt-unicode-256color
 
 ! Specifies number of lines (pixel height) to insert between each row of
-! URxvt*lineSpace: number
+URxvt*lineSpace: 0
 
 ! True: handle Meta (Alt) + keypress to set the 8th bit. False: handle
 ! URxvt*meta8: boolean
@@ -170,7 +200,7 @@ Xft.rgba: rgb
 ! URxvt*pastableTabs: boolean
 
 ! True: blink the cursor. False: do not blink the cursor [default];
-! URxvt*cursorBlink: boolean
+URxvt*cursorBlink: false
 
 ! True: Make the cursor underlined. False: Make the cursor a box
 ! URxvt*cursorUnderline: boolean
