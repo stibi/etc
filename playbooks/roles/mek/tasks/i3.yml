@@ -1,0 +1,12 @@
+---
+
+- name: Deploy i3 control scripts
+  file: src=~/dev/projects/etc/dotfiles/i3/{{ item.path }}
+        dest=~/{{ item.dest }}
+        state=link
+        force=yes
+  with_items:
+    - { path: 'config', dest: '.i3/config'}
+    - { path: 'adjustKeyboardBacklight.sh', dest: 'bin/adjustKeyboardBacklight.sh'}
+    - { path: 'adjustScreenBacklight.sh', dest: 'bin/adjustScreenBacklight.sh'}
+  tags: [i3]

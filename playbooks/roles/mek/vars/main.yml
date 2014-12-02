@@ -1,1 +1,3 @@
 ---
+# TODO ten urxvt ma byt jiny package, nevim jak se jmenuje, najit
+packages : [rsyslog, tmux, feh, urxvt]

@@ -7,6 +7,8 @@
 
 #- debug: msg="hijik={{ansible_connection}}"
 
+# TODO keyboard shortcuts pro usera pro ST3 (treba super+` pro konzoli) zmigrovat ST2 nastaveni, pokud bude potreba
+
 - name: Copy dotfiles to remote machine
   copy: src=~/dev/projects/etc/dotfiles/{{ item.path }}
         dest=~/{{ item.dest }}
@@ -20,7 +22,7 @@
     - { path: 'zsh/stibi.zsh-theme', dest: '.oh-my-zsh/themes/stibi.zsh-theme'}
   when: (ansible_connection is not defined) or (ansible_connection != 'local')
 
-
+# TODO tohle je totalne mek/workstation specific vec, to tu nema co delat
 - name: Setup dotfiles symlinks on the workstation
   file: src=~/dev/projects/etc/dotfiles/{{ item.path }}
         dest=~/{{ item.dest }}
@@ -33,4 +35,7 @@
     - { path: 'zsh/zsh_aliases.sh', dest: '.zsh_aliases.sh'}
     - { path: 'zsh/zsh_functions.sh', dest: '.zsh_functions.sh'}
     - { path: 'zsh/stibi.zsh-theme', dest: '.oh-my-zsh/themes/stibi.zsh-theme'}
+    - { path: 'tmux.conf', dest: '.tmux.conf'}
+    - { path: 'batteryStatus.sh', dest: 'bin/batteryStatus.sh'}
+    - { path: 'Xresources', dest: '.Xresources'}
   when: (ansible_connection is defined) and (ansible_connection == 'local')
