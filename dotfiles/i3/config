@@ -168,6 +168,8 @@ bindsym $mod+b workspace back_and_forth
 bindsym $mod+Shift+b move container to workspace back_and_forth
 bindsym $mod+n workspace next
 bindsym $mod+p workspace prev
+bindsym $mod+k [instance="mykeepassx"] scratchpad show
+bindsym $mod+Escape [instance="myurxvt"] scratchpad show
 
 # startup google chromium
 bindsym $mod+G exec --no-startup-id chromium
@@ -175,7 +177,6 @@ bindsym $mod+G exec --no-startup-id chromium
 # screen brightness
 bindsym XF86MonBrightnessUp   exec --no-startup-id "~/bin/adjustScreenBacklight.sh up"
 bindsym XF86MonBrightnessDown exec --no-startup-id "~/bin/adjustScreenBacklight.sh down"
-
 
 # kebyboard LED  brightness
 bindsym XF86KbdBrightnessUp   exec --no-startup-id "~/bin/adjustKeyboardBacklight.sh up"
@@ -187,6 +188,17 @@ bindsym XF86AudioRaiseVolume exec --no-startup-id "pactl set-sink-volume $sink +
 bindsym XF86AudioLowerVolume exec --no-startup-id "pactl set-sink-volume $sink -2%"
 bindsym XF86AudioMute exec --no-startup-id "pactl set-sink-mute $sink toggle"
 
+
+#for_window [class="^chromuBium$"] border none
+for_window [class="(?i)Chromium"] border none
+# KeepassX always floating
+for_window [class="(?i)keepassx"] floating enable
+# TODO
+# Skype calls floating
+#for_window [title="(?i)Call with "] floating enable
+
 # Startup
 #exec pulseaudio --start
 exec dropboxd
+exec keepassx -name mykeepassx
+exec urxvt -name myurxvt
