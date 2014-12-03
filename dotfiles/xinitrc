@@ -1,0 +1,3 @@
+# synchronizing system and selection clipboard buffers
+autocutsel -fork &
+autocutsel -selection PRIMARY -fork &
