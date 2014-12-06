@@ -152,6 +152,7 @@ bindsym $mod+r mode "resize"
 # finds out, if available)
 bar {
         status_command i3status
+        tray_output LVDS-0
 }
 
 # Network manager
@@ -175,11 +176,18 @@ bindsym $mod+Escape [class="^URxvt$" instance="scratchpad"] scratchpad show
 # startup google chromium
 bindsym $mod+G exec --no-startup-id chromium
 
+# F3 key
+bindsym XF86LaunchA exec arandr
+for_window [class="(?i)arandr"] floating enable
+# extending screen with secondary display above
+bindsym XF86LaunchB exec --no-startup-id xrandr --output LVDS-0 --auto --output DP-0 --auto --above LVDS-0
+
 #bindsym $mod+l exec "~/.local/bin/fuzzy_lock.sh"
-bindsym $mod+l exec i3lock
+# TODO disabled for now, becuase it can't unlock
+#bindsym $mod+l exec i3lock
 
 # screen brightness
-bindsym XF86MonBrightnessUp   exec --no-startup-id "~/bin/adjustScreenBacklight.sh up"
+bindsym XF86MonBrightnessUp exec --no-startup-id "~/bin/adjustScreenBacklight.sh up"
 bindsym XF86MonBrightnessDown exec --no-startup-id "~/bin/adjustScreenBacklight.sh down"
 
 # kebyboard LED  brightness
@@ -192,24 +200,25 @@ bindsym XF86AudioRaiseVolume exec --no-startup-id "pactl set-sink-volume $sink +
 bindsym XF86AudioLowerVolume exec --no-startup-id "pactl set-sink-volume $sink -- -5%"
 bindsym XF86AudioMute exec --no-startup-id "pactl set-sink-mute $sink toggle"
 
-# urxvt hidden in scratchpad
-for_window [class="^URxvt$" instance="scratchpad"] border 1pixel, move scratchpad;
-for_window [class="(?i)keepassx" instance="scratchpad"] move scratchpad;
-#for_window [class="^chromuBium$"] border none
+for_window [instance="scratchpad"] move window to scratchpad
+for_window [class="^URxvt$" instance="scratchpad"] border 2pixel;
 for_window [class="(?i)Chromium"] border none
-# KeepassX always floating
 for_window [class="(?i)keepassx"] floating enable;
+for_window [class="(?i)kcalc"] floating enable;
+for_window [class="transmission-qt"] floating enable;
 # TODO
 # Skype calls floating
 #for_window [title="(?i)Call with "] floating enable
 
-exec ~/.i3/autostart
+#exec ~/.i3/autostart
 
 # Startup
-exec pulseaudio --start
-exec dropboxd
-#exec pasystray
-exec keepassx -name scratchpad
-exec urxvt -name scratchpad
-
-# TODO nastartovat pulseaudio
+exec --no-startup-id dunst
+exec --no-startup-id xset dpms 300 600 900
+exec --no-startup-id setxkbmap -layout vok
+exec --no-startup-id ~/bin/loadcolor.sh
+exec --no-startup-id pulseaudio --start
+exec --no-startup-id dropboxd
+exec --no-startup-id pasystray
+exec --no-startup-id keepassx -name scratchpad
+exec --no-startup-id urxvt -name scratchpad

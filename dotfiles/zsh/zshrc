@@ -90,9 +90,10 @@ export EDITOR='vim'
 
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
 
-# Auto-started by WM now (KDE or i3)
-#. ~/bin/agent-startup.sh
+# ssh-agent for my keys
+. ~/bin/agent-startup.sh
 
+# TODO still needed?
 eval `dircolors /etc/dir_colors`
 
 # Instead of overwriting the history file, instead it appends lines. This helps if there are multiple zsh sessions, so that they don't just overwrite the history
