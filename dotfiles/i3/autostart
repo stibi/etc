@@ -1,0 +1,6 @@
+#!/bin/bash
+
+~/bin/loadcolor.sh &
+setxkbmap -layout vok &
+## DPMS monitor setting (standby -> suspend -> off) (seconds)
+xset dpms 300 600 900 &

@@ -1,10 +1,18 @@
 Xft*dpi: 96
-Xft*antialias: false
-Xft*hinting: true
+Xft*antialias: 1
+Xft*hinting: 1
 Xft*hintstyle: hintslight
 Xft*rgba: rgb
 Xft*autohint: 0
 Xft*lcdfilter: lcddefault
+
+! XTerm*termName: "xterm-256color"
+
+!URxvt*termName: "screen-256color"
+URxvt.termName: rxvt-unicode-256color
+
+! URxvt*keysym.Home: \033[7~
+! URxvt*keysym.End: \033[8~
 
 ! Compile xft: Attempt to find a visual with the given bit depth; option
 ! URxvt*depth: bitdepth
@@ -185,7 +193,7 @@ URxvt*internalBorder: 3
 ! URxvt*skipBuiltinGlyphs: boolean
 
 ! Specifies the terminal type name to be set in the TERM environment
-URxvt.termName: rxvt-unicode-256color
+! URxvt.termName: rxvt-unicode-256color
 
 ! Specifies number of lines (pixel height) to insert between each row of
 URxvt*lineSpace: 0

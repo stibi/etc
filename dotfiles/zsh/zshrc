@@ -1,8 +1,10 @@
 # Path to your oh-my-zsh configuration.
 ZSH=$HOME/.oh-my-zsh
 
-export TERM="xterm-256color"
-export TERMINAL=/usr/bin/urxvt
+# tohle se pry nedela: https://wiki.archlinux.org/index.php/Home_and_End_keys_not_working
+# TODO co, jak, proc
+#export TERM="xterm-256color"
+#export TERMINAL=/usr/bin/urxvt
 
 # Workaournd for this issue: https://github.com/archlinuxfr/yaourt/issues/11
 ttyctl -f
@@ -88,10 +90,8 @@ export EDITOR='vim'
 
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
 
-# Presunuto do /etc/profile
-#eval $(ssh-agent)
-#source ~/.keychain/mek-sh
-. ~/bin/agent-startup.sh
+# Auto-started by WM now (KDE or i3)
+#. ~/bin/agent-startup.sh
 
 eval `dircolors /etc/dir_colors`
 
@@ -105,3 +105,10 @@ setopt HIST_IGNORE_DUPS
 # !! Temporary workaround for grep and the deprecation of GREP_OPTIONS in grep 2.21
 alias grep="/usr/bin/grep $GREP_OPTIONS"
 unset GREP_OPTIONS
+
+# bindovani Home/End klaves (fň + vlevo/vpravo)
+# V KDE/Konsole to funguje i bez tech bindkey, ale v urvxt z nejakeho duvodu ne
+# nevim proc a stve me, ze nevim proc
+# Takze TODO tady. Ma to co delat s $TERM rekl bych.
+bindkey "\e[7~" beginning-of-line
+bindkey "\e[8~" end-of-line

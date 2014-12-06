@@ -17,6 +17,7 @@ set $mod Mod4
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
 # Zkusit oxygen?
 font pango:DejaVu Sans Mono 8
+#font pango:Ubuntu Mono 10
 # Before i3 v4.8, we used to recommend this one as the default:
 # font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
 # The font above is very space-efficient, that is, it looks good, sharp and
@@ -168,11 +169,14 @@ bindsym $mod+Tab workspace back_and_forth
 bindsym $mod+Shift+Tab move container to workspace back_and_forth
 bindsym $mod+n workspace next
 bindsym $mod+p workspace prev
-bindsym $mod+k [instance="mykeepassx"] scratchpad show
-bindsym $mod+Escape [instance="myurxvt"] scratchpad show
+bindsym $mod+k [class="(?i)keepassx" instance="scratchpad"] scratchpad show
+bindsym $mod+Escape [class="^URxvt$" instance="scratchpad"] scratchpad show
 
 # startup google chromium
 bindsym $mod+G exec --no-startup-id chromium
+
+#bindsym $mod+l exec "~/.local/bin/fuzzy_lock.sh"
+bindsym $mod+l exec i3lock
 
 # screen brightness
 bindsym XF86MonBrightnessUp   exec --no-startup-id "~/bin/adjustScreenBacklight.sh up"
@@ -189,19 +193,23 @@ bindsym XF86AudioLowerVolume exec --no-startup-id "pactl set-sink-volume $sink -
 bindsym XF86AudioMute exec --no-startup-id "pactl set-sink-mute $sink toggle"
 
 # urxvt hidden in scratchpad
-for_window [class="^URxvt$" instance="myurxvt"] border 1pixel; move scratchpad
+for_window [class="^URxvt$" instance="scratchpad"] border 1pixel, move scratchpad;
+for_window [class="(?i)keepassx" instance="scratchpad"] move scratchpad;
 #for_window [class="^chromuBium$"] border none
 for_window [class="(?i)Chromium"] border none
 # KeepassX always floating
-for_window [class="(?i)keepassx"] floating enable
+for_window [class="(?i)keepassx"] floating enable;
 # TODO
 # Skype calls floating
 #for_window [title="(?i)Call with "] floating enable
 
+exec ~/.i3/autostart
+
 # Startup
-#exec pulseaudio --start
+exec pulseaudio --start
 exec dropboxd
-exec keepassx -name mykeepassx
-exec urxvt -name myurxvt
+#exec pasystray
+exec keepassx -name scratchpad
+exec urxvt -name scratchpad
 
 # TODO nastartovat pulseaudio
