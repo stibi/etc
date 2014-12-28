@@ -1,5 +1,32 @@
 ---
 
+# TODO move to own role
+# TODO start i3wm by systemd user service, maybe also tmux and ssh-keys, see all the example here: https://wiki.archlinux.org/index.php/Systemd/User
+
+#balicky
+#i3
+#dmenu
+#i3lock
+#dunts
+
+#adjustBacklight potrebuje exec bit
+
+# TODO seznam balicku do variables
+- name: Install packages needed for i3wm desktop setup
+  sudo: yes
+  pacman: >
+    name={{ item }}
+    state=present
+  with_items:
+    - i3-wm
+    - i3status
+    - i3lock
+    - dmenu
+    # TODO tohle je AUR package, to asi pacman nepobere
+    - j4-dmenu-desktop
+  tags: [i3wm]
+
+# TODO path to dotfiles from a varible?
 - name: Deploy i3 control scripts
   file: src=~/dev/projects/etc/dotfiles/i3/{{ item.path }}
         dest=~/{{ item.dest }}
@@ -7,6 +34,8 @@
         force=yes
   with_items:
     - { path: 'config', dest: '.i3/config'}
-    - { path: 'adjustKeyboardBacklight.sh', dest: 'bin/adjustKeyboardBacklight.sh'}
+    - { path: 'adjustBacklight.sh', dest: 'bin/adjustBacklight.sh'}
     - { path: 'adjustScreenBacklight.sh', dest: 'bin/adjustScreenBacklight.sh'}
-  tags: [i3]
+    - { path: 'i3status.conf', dest: '.i3status.conf'}
+    - { path: 'im-workspace.json', dest: '.i3/im-workspace.json'}
+  tags: [i3wm]

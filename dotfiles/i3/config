@@ -201,6 +201,7 @@ for_window [title="(?i)Call with "] floating enable
 exec_always (xrandr | grep 'DP-0 connected' &> /dev/null) && xrandr --output LVDS-0 --auto --primary --output DP-0 --auto --above LVDS-0
 # setup my wallpaper
 # TODO doesn't really works good when second display is connected
+# TODO it have to wait until xrandr has finished its job
 exec_always feh --no-fehbg --bg-fill ~/Dropbox/wallpapers/orion_aerial.jpg
 
 # Startup
@@ -218,6 +219,8 @@ exec --no-startup-id urxvt -name scratchpad
 
 # Start few of basic/daily used applications and place them on specific workspaces
 # Workspace #1 - IM: Skype, hipchat
+# setup a layout for IM windows on the workspace
+exec --no-startup-id "i3-msg 'workspace 1:IM; append_layout /home/stibi/.i3/im-workspace.json'"
 exec --no-startup-id skype
 assign [class="Skype"] → 1:IM
 exec --no-startup-id hipchat

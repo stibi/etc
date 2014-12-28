@@ -1,0 +1,71 @@
+{
+    // stacked split container with 2 children
+    "border": "normal",
+    "floating": "auto_off",
+    "layout": "stacked",
+    "percent": 0.8,
+    "type": "con",
+    "nodes": [
+        {
+            "border": "normal",
+            "floating": "auto_off",
+            "geometry": {
+               "height": 840,
+               "width": 1146,
+               "x": 0,
+               "y": 1080
+            },
+            "name": "HipChat",
+            "percent": 0.5,
+            "swallows": [
+               {
+                "class": "^HipChat$",
+                "instance": "^hipchat$",
+                "title": "^HipChat$"
+               }
+            ],
+            "type": "con"
+        },
+        {
+            "border": "normal",
+            "floating": "auto_off",
+            "geometry": {
+               "height": 858,
+               "width": 474,
+               "x": 0,
+               "y": 0
+            },
+            "name": "skype_conversation",
+            "percent": 0.5,
+            "swallows": [
+               {
+                "class": "^Skype$",
+                "instance": "^skype$",
+                "window_role": "^ConversationsWindow$"
+               }
+            ],
+            "type": "con"
+        }
+    ]
+}
+
+{
+    "border": "normal",
+    "floating": "auto_off",
+    "geometry": {
+       "height": 879,
+       "width": 714,
+       "x": 720,
+       "y": 1098
+    },
+    "name": "skype_main",
+    "percent": 0.2,
+    "swallows": [
+       {
+        "class": "^Skype$",
+        "instance": "^skype$"1
+       }
+    ],
+    "type": "con"
+}
+
