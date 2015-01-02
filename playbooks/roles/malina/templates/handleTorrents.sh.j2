@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# TODO this script is just a giant ugly workaround for a problem with permissions and security configuration on my NFS server. Shame to lazy me.
+
+set -o errexit
+set -o nounset
+
+TORRENTS_DOWNLOAD_DIR="{{ transmission.completed_dir }}"
+MOVIES_DIR="{{ nfs.movies_dir }}"
+
+function fixupPermissionsInDestination() {
+    local destination=$1
+    local newOwner="stibi"
+    local newGroup="users"
+    local permissions="777"
+    chmod -Rv ${permissions} ${destination}
+    chown -Rv ${newOwner}:${newGroup} ${destination}
+}
+
+function moveDownloadedTorrentsTo() {
+    local destination=$1
+    mv -v ${TORRENTS_DOWNLOAD_DIR}/* ${destination}
+}
+
+function handleMovies() {
+    moveDownloadedTorrentsTo ${MOVIES_DIR}
+    fixupPermissionsInDestination ${MOVIES_DIR}
+}
+
+cmdArg="${1:-help}"
+case ${cmdArg} in
+    movies) handleMovies
+            ;;
+         *) echo
+            echo "wat? you wrote it, you should know"
+            echo
+            ;;
+esac

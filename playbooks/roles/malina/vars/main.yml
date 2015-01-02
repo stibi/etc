@@ -1,7 +1,9 @@
 ---
 # TODO avahi se tady instaluje? Mam roli...
-packages: [ rsyslog, transmission-cli, nfs-utils, avahi, nss-mdns, fakeroot, binutils, yajl, gcc, make, ntp, samba, nodejs ]
+# TODO nodejs je nutne? To si nainstaluje ten co to potrebuje, ne?
+packages: [ rsyslog, transmission-cli, nfs-utils, avahi, nss-mdns, fakeroot, binutils, yajl, gcc, make, ntp, samba, nodejs, wget, patch ]
 
+# TODO transmission do vlastni role
 transmission:
   port: 9091
   user: torrentman
@@ -9,6 +11,9 @@ transmission:
   torrents_dir: /mnt/usbdisk/torrents
   completed_dir: /mnt/usbdisk/torrents/completed
   inprogreess_dir: /mnt/usbdisk/torrents/inprogress
+
+nfs:
+  movies_dir: /mnt/usbdisk/filmy
 
 # TODO stibi user uz tam je, diky myuser roli, takhle bych ho akorat prepsal
 samba:
@@ -19,3 +24,6 @@ samba:
 sensors:
   ds1820_sensor_id: 28-0000060a382b
 
+rss2email:
+  feeds:
+    - https://what-if.xkcd.com/feed.atom

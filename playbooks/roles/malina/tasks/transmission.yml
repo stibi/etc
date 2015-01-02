@@ -19,8 +19,8 @@
   file: >
     state=directory
     mode=2777
-    group=users
     owner=stibi
+    group=users
     recurse=yes
     path={{ transmission.torrents_dir }}
   tags: [transmission]
@@ -31,4 +31,23 @@
     src=transmission_settings.json.j2
     dest=/var/lib/transmission/.config/transmission-daemon/settings.json
   notify: [restart transmission]
+  tags: [transmission]
+
+- name: Setup script to handle completed torrents
+  sudo: yes
+  template: >
+    src=handleTorrents.sh.j2
+    dest=/home/stibi/bin/handleTorrents.sh
+    owner=stibi
+    group=users
+    mode=0744
+  tags: [transmission]
+
+- name: Setup passwordless sudo for the torrent handling script
+  sudo: yes
+  copy: >
+    src=torrents_sudoers
+    dest=/etc/sudoers.d/torrents
+    owner=root
+    group=root
   tags: [transmission]

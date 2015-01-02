@@ -33,6 +33,7 @@
   when: not zshrc_orig_stat.stat.exists
   tags: [user, zsh]
 
+# TODO rename, refactor
 - name: stat ~/.zshrc
   sudo: yes
   sudo_user: stibi
@@ -94,3 +95,23 @@
     state=present
   tags: [user]
 
+- name: Create ~/bin for my non-priviledged user to place my scripts there
+  sudo: yes
+  file: >
+    dest=/home/stibi/bin
+    owner=stibi
+    group=users
+    state=directory
+  tags: [user]
+
+# TODO nope, not yet done, too many hairs pulled out
+# - name: Add ~/bin to PATH
+#   sudo: yes
+#   lineinfile: >
+#     dest=~/.zshrc
+#     backrefs=true
+#     regexp='^export PATH="?(([a-zA-Z0-9/.\-@$_]+:?)*~/bin/?:?([a-zA-Z0-9/.\-@$_]+:?)*)"?'
+#     line=
+#     state=present
+#     onlyif binToPath is true
+#   tags: [user, pathdebug]
