@@ -23,7 +23,7 @@ ROPWD="%{$FG[192]%}"
 RESETCOL="%{$reset_color%}"
 RESETFX="%{$FX[reset]%}"
 
-USER="${ORANGE}%n"
+MYUSER="${ORANGE}%n"
 MACHINE="${ORANGE}%m"
 MYPWD="%~"
 TIMESTAMP="%*"
@@ -101,7 +101,7 @@ setupMyPromptVariables() {
 }
 
 calculateVariablesWidths() {
-    STIBI_THEME_PROMPT_WIDTH=$(calculateUserVisibleStringLength "${USER}@${MACHINE}:")
+    STIBI_THEME_PROMPT_WIDTH=$(calculateUserVisibleStringLength "${MYUSER}@${MACHINE}:")
     STIBI_THEME_PWD_WIDTH=$(calculateUserVisibleStringLength "${MYPWD}")
     # Note the extra space leading the timestamp variable, this is the space separating sysinfo and timestamp in the prompt. It have to be calculated.
     STIBI_THEME_TIMESTAMP_WIDTH=$(calculateUserVisibleStringLength " ${TIMESTAMP}")
@@ -189,7 +189,7 @@ setprompt() {
 # ${CYAN}${TIMESTAMP}${RESETCOL}
 # ${ret_status}${RESETCOL} '
     PROMPT='
-${BOLD}${USER}@${MACHINE}${RESETFX}${GRAY}:$STIBI_THEME_PWD_COLOR\
+${BOLD}${MYUSER}@${MACHINE}${RESETFX}${GRAY}:$STIBI_THEME_PWD_COLOR\
 %$ADJUST_PWD_TO_WIDTH<...<${MYPWD}%<<$(git_prompt_info)\
 ${(e)STIBI_THEME_FILLBAR} ${GRAY}${TIMESTAMP}${RESETCOL}
 ${ret_status}${RESETCOL} '

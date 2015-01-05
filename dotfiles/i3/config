@@ -71,8 +71,8 @@ bindsym $mod+a focus parent
 # switch to workspace
 bindsym $mod+1 workspace "1:IM"
 bindsym $mod+2 workspace "2:web"
-bindsym $mod+3 workspace "3:urxvt"
-bindsym $mod+4 workspace "4:dev"
+bindsym $mod+3 workspace "3:dev"
+bindsym $mod+4 workspace "4:urxvt"
 bindsym $mod+5 workspace "5:FM"
 bindsym $mod+6 workspace 6
 bindsym $mod+7 workspace 7
@@ -93,8 +93,8 @@ workspace 8 output DP-0
 # move focused container to workspace
 bindsym $mod+Shift+1 move container to workspace "1:IM"
 bindsym $mod+Shift+2 move container to workspace "2:web"
-bindsym $mod+Shift+3 move container to workspace "3:urxvt"
-bindsym $mod+Shift+4 move container to workspace "4:dev"
+bindsym $mod+Shift+3 move container to workspace "3:dev"
+bindsym $mod+Shift+4 move container to workspace "4:urxvt"
 bindsym $mod+Shift+5 move container to workspace "5:FM"
 bindsym $mod+Shift+6 move container to workspace 6
 bindsym $mod+Shift+7 move container to workspace 7
@@ -161,9 +161,8 @@ bindsym $mod+G exec --no-startup-id chromium
 bindsym XF86LaunchA exec arandr
 # F4 key: extending screen with secondary display above
 bindsym XF86LaunchB exec --no-startup-id xrandr --output LVDS-0 --auto --output DP-0 --auto --above LVDS-0
-#bindsym $mod+l exec "~/.local/bin/fuzzy_lock.sh"
 # TODO disabled for now, becuase it can't unlock, some bug or wrong PAM configuration
-#bindsym $mod+l exec i3lock
+bindsym $mod+l exec /home/stibi/dev/projects/i3lock/i3lock
 
 # screen backlight
 bindsym XF86MonBrightnessUp exec --no-startup-id "~/bin/adjustBacklight.sh display up"
@@ -184,11 +183,11 @@ for_window [class="(?i)urxvt" instance="scratchpad"] border 2pixel
 for_window [class="(?i)Chromium"] border none
 for_window [class="(?i)keepassx" instance="scratchpad"] floating enable
 for_window [class="(?i)kcalc"] floating enable
-for_window [class="transmission-qt"] floating enable
+for_window [class="transmission"] floating enable
 for_window [class="(?i)gparted"] floating enable
 for_window [class="Vlc"] floating enable
 for_window [class="(?i)arandr"] floating enable
-# Krusader needs a little more care
+# Krusader needs a little bit more care
 for_window [title="Copying" class="Krusader"] floating enable
 for_window [title="Copying. " class="Krusader"] floating enable
 for_window [title="Moving" class="Krusader"] floating enable
@@ -228,12 +227,12 @@ assign [class="HipChat"] → 1:IM
 # Workspace #2 - Web browser: chromium
 exec --no-startup-id chromium
 assign [class="(?i)Chromium"] → 2:web
-# Workspace #3 - terminal: urxvt
-# urxvt started this way because I don't want to have ALL the urxvt instances placed on a specific workspace, so this is just "one time" urxvt exec
-exec --no-startup-id i3-msg 'workspace "3:urxvt"; exec i3-sensible-terminal'
-# Workspace #4 - dev: sublime text 3
+# Workspace #3 - dev: sublime text 3
 exec --no-startup-id subl3
-assign [class="Subl3"] → 4:dev
+assign [class="Subl3"] → 3:dev
+# Workspace #4 - terminal: urxvt
+# urxvt started this way because I don't want to have ALL the urxvt instances placed on a specific workspace, so this is just "one time" urxvt exec
+exec --no-startup-id i3-msg 'workspace "4:urxvt"; exec i3-sensible-terminal'
 # Workspace #5 - filemanager: krusader
 exec --no-startup-id krusader
 assign [class="^Krusader"] → 5:FM
