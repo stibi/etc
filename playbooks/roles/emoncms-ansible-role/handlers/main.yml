@@ -1,0 +1,8 @@
+---
+
+# TODo ta servica se jmenuje ruzne, distro specific
+- name: restart apache
+  sudo: yes
+  service: >
+    name=httpd
+    state=restarted

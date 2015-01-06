@@ -1,0 +1,252 @@
+---
+# TODO mosquitto je optional a navic pro arch arm asi neni (zbuildit)
+- name: Install needed packages for emoncms
+  sudo: yes
+  action: >
+    {{ ansible_pkg_mgr }}
+    name={{ item }}
+    state=present
+  with_items: emoncms_ansible_role.emoncms_packages
+
+- name: Enable services
+  sudo: yes
+  service: >
+    name={{ item }}
+    enabled=yes
+  with_items: emoncms_ansible_role.emoncms_services
+
+# TODO english je v poradku tady v tom name? Ceknout taky emonhub stejny task
+- name: Create non-priviledged user for running emoncms
+  sudo: yes
+  user: >
+    name="{{ emoncms_ansible_role.emoncms_user }}"
+    createhome=yes
+    append=yes
+    groups="{{ emoncms_ansible_role.emoncms_user_groups | join(',') }}"
+
+- name: pear | install channels
+  sudo: yes
+  command: pear channel-discover {{ item }}
+  with_items:
+    - pear.apache.org/log4php
+  #when: php.pear.channels is defined
+  register: channel_result
+  changed_when: "'initialized' not in channel_result.stdout"
+  # TODO: This will always error out the first time it's run.
+  failed_when: "'already initialized' not in channel_result.stdout"
+
+# Pear Packages
+
+- name: pear | install packages
+  sudo: yes
+  #command: pear install {{ php.pear.install_args|default('') }} {{ item }}
+  command: pear install {{ item }}
+  #with_items: php.pear.modules
+  with_items:
+    - log4php/Apache_log4php
+  #when: php.pear.modules is defined
+  register: pear_result
+  changed_when: "'already installed' not in pear_result.stdout"
+  failed_when: "'already installed' not in pear_result.stdout and pear_result.stderr"
+
+# TODO
+- name: pecl | channel update
+  sudo: yes
+  command: pecl channel-update pecl.php.net
+  #changed_when: TODO
+  #failed_when: TODO
+
+# TODO mozna lepsi name, kdyz nevolam primo pecl, ale koukam jestli ten modul existuje jako soubor v filesystemu
+- name: Check if redis has been installed from pecl
+  stat: >
+    path="{{ emoncms_ansible_role.pecl_redis_php_module_path }}"
+  register: redis_pecl_installation_check
+
+# - debug: var=redis_pecl_installation_check
+#   tags: debug
+
+# TODO udelat spravne when, at se ten redis nekompiluje pokazde co spustim playbook
+- name: pecl | install redis
+  sudo: yes
+  command: pecl install redis
+  when: redis_pecl_installation_check.stat.exists == false
+#   tags: debug
+  #changed_when: TODO
+  #failed_when: TODO
+
+- name: Enabled redis extension for php
+  sudo: yes
+  lineinfile: >
+    dest=/etc/php/php.ini
+    insertafter="^;extension="
+    line="extension=redis.so"
+    state=present
+
+# Na open_basedir jsem zapomnel
+# [Tue Dec 16 12:38:36.644104 2014] [:error] [pid 346] [client 192.168.2.169:47659] PHP Warning:  fopen(): open_basedir restriction in effect. File(/opt/emoncms_data/phpfina/3.meta) is not within the allowed path(s): (/srv/http/:/home/:/tmp/:/usr/share/pear/:/usr/share/webapps/:/var/log/:/opt/data/) in /srv/http/emoncms/Modules/feed/engine/PHPFina.php on line 442, referer: http://malina.local/emoncms/input/view
+# je treba editovat php.ini a pridat tam cestu k emoncms data
+
+- name: Disable redis data persisting to disk
+  sudo: yes
+  lineinfile: >
+    dest=/etc/redis.conf
+    regexp="^#?{{ item }}"
+    line="#{{ item }}"
+    state=present
+  with_items:
+    - save 900 1
+    - save 300 10
+    - save 60 10000
+  notify: restart redis
+
+# TODO nastavit ten rewrite ALLOW ALL pro directory nebo co to je
+
+# TODO nevim jestli je treba ten virtualhost
+# - name: Create apache virtual host for emonCMS
+#   TODO
+
+- name: Check if emoncms is already installed
+  stat: >
+    path={{ emoncms_ansible_role.emoncms_installation_path }}
+  register: emoncms_installation_check
+
+- name: Clone bufferedwrite git branch of emoncms
+  sudo: yes
+  when: emoncms_installation_check.stat.exists == false
+  git: >
+    dest={{ emoncms_ansible_role.emoncms_installation_path }}
+    repo=https://github.com/emoncms/emoncms.git
+    version=bufferedwrite
+
+- name: Setup emoncms installation permissions
+  sudo: yes
+  file: >
+    dest={{ emoncms_ansible_role.emoncms_installation_path }}
+    recurse=yes
+    owner={{ emoncms_ansible_role.emoncms_user }}
+    group={{ emoncms_ansible_role.http_group }}
+    mode="u=rwx,g=rwx,o="
+
+# TODO nainstalovat Requires the MySQLdb Python package on the remote host. For Ubuntu, this is as easy as apt-get install python-mysqldb.
+
+# TODO premistit user/passwd do [client] v my.cnf (nebo ne? podminku?)
+
+- name: Create MySQL database for emoncms
+  mysql_db: >
+    name={{ emoncms_ansible_role.emoncms_mysql_db_name }}
+    state=present
+    login_host={{ emoncms_ansible_role.mysql_server_host }}
+    login_user={{ emoncms_ansible_role.mysql_server_user }}
+    login_password={{ emoncms_ansible_role.mysql_server_password }}
+  tags: [database]
+
+- name: Create user for emoncms in MySQL
+  mysql_user: >
+    name={{ emoncms_ansible_role.emoncms_mysql_db_user_name }}
+    password={{ emoncms_ansible_role.emoncms_mysql_db_user_password }}
+    state=present
+    append_privs=yes
+    priv="{{ emoncms_ansible_role.emoncms_mysql_db_name }}.*:ALL"
+    login_host={{ emoncms_ansible_role.mysql_server_host }}
+    login_user={{ emoncms_ansible_role.mysql_server_user }}
+    login_password={{ emoncms_ansible_role.mysql_server_password }}
+  tags: [database]
+
+- name: Create emoncms data directory
+  sudo: yes
+  file: >
+    dest={{ emoncms_ansible_role.emoncms_data_path }}
+    owner={{ emoncms_ansible_role.emoncms_user }}
+    group={{ emoncms_ansible_role.http_group }}
+    mode="u=rwx,g=rwx,o=r"
+    state=directory
+
+# TODO je tady problem s pravy, ty .dat a .meta soubory, ktere emoncms vytvori pro jednotlive data enginy a feedy, maji prava http:http, takze feedwriter, ktery bezi pod emoncms uctem, do toho nezapise, i kdyz je v http skupine, proto grupa tam ma jenom prava na cteni myslim.
+# Takze nejaky umask nebo tak neco? At http grup muze i zapisovat.
+
+- name: Create directories for emoncms feed engines data
+  sudo: yes
+  file: >
+    dest={{ emoncms_ansible_role.emoncms_data_path }}/{{ item }}
+    owner={{ emoncms_ansible_role.emoncms_user }}
+    group={{ emoncms_ansible_role.http_group }}
+    mode="u=rwx,g=rwx,o=r"
+    state=directory
+  with_items:
+    - phpfina
+    - phpfiwa
+    - phptimeseries
+
+# TODO no jo, ale mne chybi nastaveni datadir pro jednotlive dataenginy v settings.conf v emoncms, tam se to bude blbe delat, ten string neni na jednom radku
+
+# formatting
+- name: Use default.settings.php file for emoncms configuration
+  sudo: yes
+  command: >
+    cp {{ emoncms_ansible_role.emoncms_installation_path }}/default.settings.php {{ emoncms_ansible_role.emoncms_installation_path }}/settings.php
+    creates="{{ emoncms_ansible_role.emoncms_installation_path }}/settings.php"
+
+- name: Configure emoncms
+  sudo: yes
+  lineinfile: >
+    dest="{{ emoncms_ansible_role.emoncms_installation_path }}/settings.php"
+    regexp="^    \${{ item.configProperty }}"
+    line='    ${{ item.configProperty }} = "{{ item.configValue }}";'
+    state=present
+  with_items:
+    - { configProperty : "username", configValue : "{{ emoncms_ansible_role.emoncms_mysql_db_user_name }}"}
+    - { configProperty : "password", configValue : "{{ emoncms_ansible_role.emoncms_mysql_db_user_password }}"}
+    - { configProperty : "server", configValue : "{{ emoncms_ansible_role.mysql_server_host }}"}
+    - { configProperty : "database", configValue : "{{ emoncms_ansible_role.emoncms_mysql_db_name }}"}
+  tags: debug
+
+
+# TODO cesta k PHP ini je distro specific
+# TODO timezone dat do vars, aby to slo modifikovat
+# TODO je ta timezone vec nutna vzdy a vsude?
+# PHP 5.4.0 has removed the timezone guessing algorithm and now defaults the timezone to "UTC" on some distros (i.e. Ubuntu 13.10).
+- name: Configure PHP timezone
+  sudo: yes
+  lineinfile: >
+    dest=/etc/php/php.ini
+    regexp="^;?date.timezone ="
+    line='date.timezone = "Europe/Prague"'
+  notify:
+    - restart apache
+
+# TODO parametrizovat, kde se ten soubor vytvori?
+# Pak bych musel upravit i to logger xml, ne?
+- name: Create logfile for emoncms
+  sudo: yes
+  file: >
+    dest=/var/log/emoncms.log
+    owner={{ emoncms_ansible_role.emoncms_user }}
+    group={{ emoncms_ansible_role.http_group }}
+    mode="u=rw,g=rw,o="
+    state=file
+
+- name: Install systemd service for feedwriter
+  sudo: yes
+  template: >
+    src=feedwriter.service.j2
+    dest=/usr/lib/systemd/system/feedwriter.service
+    owner=root
+    group=root
+  tags: [service]
+
+- name: Create logfile for feedwriter
+  sudo: yes
+  file: >
+    dest={{ emoncms_ansible_role.feedwriter_logfile }}
+    owner={{ emoncms_ansible_role.emoncms_user }}
+    group=users
+    state=touch
+
+- name: Enable and start feedwriter service
+  sudo: yes
+  service: >
+    name=feedwriter.service
+    enabled=yes
+    state=started
+
+# TODO logrotate

@@ -1,0 +1,47 @@
+---
+# mysql-python balik je tu kvuli Ansible mysql modulu, takhle se jmenuje v Archu, jinde to bude jinak
+emoncms_ansible_role:
+  emoncms_packages:
+    - autoconf
+    - apache
+    - mariadb
+    - curl
+    - git
+    - redis
+    - python2-pyserial
+    - python2-configobj
+    - sysstat
+    - minicom
+    - php
+    - php-apache
+    - php-pear
+    - php-mcrypt
+    - php-pear
+    - make
+    - mysql-python
+
+  emoncms_services:
+    - httpd
+    - mysqld
+    - redis
+
+  # TODO tohle se meni podle systemu, http v archu, www-data na debianu
+  http_group: http
+  emoncms_user: emoncms
+  emoncms_user_groups:
+    - users
+    - http
+
+  pecl_redis_php_module_path: /usr/lib/php/modules/redis.so
+  emoncms_installation_path: /srv/http/emoncms
+  emoncms_data_path: /opt/emoncms_data
+
+  mysql_server_host: localhost
+  mysql_server_user: root
+  # TODO lepsi heslo
+  mysql_server_password: foobar
+  emoncms_mysql_db_name: emoncms
+  emoncms_mysql_db_user_name: emoncms
+  emoncms_mysql_db_user_password: emoncmspasswd
+
+  feedwriter_logfile: /var/log/feedwriter.log

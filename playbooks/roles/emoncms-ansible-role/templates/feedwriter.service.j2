@@ -1,0 +1,15 @@
+[Unit]
+Description=feedwriter service
+
+[Service]
+Environment="FEEDWRITER_LOG=/var/log/feedwriter.log"
+ExecStart=/usr/bin/php -f feedwriter.php
+WorkingDirectory=/srv/http/emoncms/run/
+User=emoncms
+Group=http
+Nice=10
+SyslogIdentifier=feedwriter
+KillSignal=SIGINT
+
+[Install]
+WantedBy=multi-user.target

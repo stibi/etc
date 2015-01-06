@@ -1,0 +1,16 @@
+---
+emoncms_ansible_role:
+  emoncms_packages:
+    - php-pear
+    - php5-dev
+    - libpcre3-dev
+    - make
+
+  emoncms_services:
+    - httpd
+    - mysqld
+    - redis
+
+  emoncms_user_groups: users,http
+
+  pecl_redis_php_module_path: /usr/lib/php/modules/redis.so
