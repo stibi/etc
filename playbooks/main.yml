@@ -33,6 +33,10 @@
     - ds18b20-service
     - ssh
     - { role: autossh, remote_forwarded_ssh_port: 4444 }
+    - { role: emoncms-ansible-role }
+    - { role: emonhub-ansible-role, rfm12pi_group: 210, rfm12pi_freq: 868,rfm12pi_baseid: 1, emonhub_emoncms_apikey: "6a272ec63787809a59e4f56bfaac4f3b" }
+    - nodered-ansible-role
+    - mosquitto-ansible-role
 
 - name: Configure oblacek server
   hosts: oblacek
@@ -42,17 +46,17 @@
     - myuser
     - oblacek
 
-- name: Configure raspi - hopspi
-  hosts: hopspi
-  user: ansible
-  vars_files:
-  - roles/hopspi/vars/vault.yml
-  - roles/hopspi/vars/main.yml
-  roles:
-    - common
-    - myuser
-    - hopspi
-    - ssh
-    - ds18b20-service
-    - avahi
-    - { role: autossh, remote_forwarded_ssh_port: 3333 }
+# - name: Configure raspi - hopspi
+#   hosts: hopspi
+#   user: ansible
+#   vars_files:
+#   - roles/hopspi/vars/vault.yml
+#   - roles/hopspi/vars/main.yml
+#   roles:
+#     - common
+#     - myuser
+#     - hopspi
+#     - ssh
+#     - ds18b20-service
+#     - avahi
+#     - { role: autossh, remote_forwarded_ssh_port: 3333 }

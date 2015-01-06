@@ -109,3 +109,38 @@ Nainstalovat python2:
 ```
 [root@alarmpi ~]# pacman -S python2
 ```
+
+## Get facts about hosts with Ansible
+
+For example, details about distribution on a host…
+
+```
+ansible -i mymachines -m setup host -a 'filter=ansible_distribution*'
+```
+
+## Git subtree
+
+Několik repozitářů mám tady začleněných pomocí git subtree. Třeba ansible role, které udržuju ve vlastních repozitářích.
+
+Help: http://blogs.atlassian.com/2013/05/alternatives-to-git-submodule-git-subtree/
+
+### Adding the subtree as a remote
+
+`git remote add -f emonhub-ansible-role https://github.com/stibi/emonhub-ansible-role.git`
+
+### Add the subtree
+
+`git subtree add --prefix playbooks/roles/emonhub-ansible-role emonhub-ansible-role master --squash`
+
+### Update the subtree
+
+`git fetch emonhub-ansible-role master`
+`git subtree pull --prefix playbooks/roles/emonhub-ansible-role emonhub-ansible-role master --squash`
+
+## TODO
+
+* Enable OpenVPN service na breptovi
+* SSH pristup na me servery z Androidu
+* Port forward pro transmission
+* Transmission klient na Androidu
+* Majordomo na breptovi

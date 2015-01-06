@@ -13,5 +13,5 @@ localhost ansible_connection=local ansible_python_interpreter=/usr/bin/python2
 [oblacek]
 oblacek.stibi.name ansible_python_interpreter=/usr/bin/python2
 
-[hopspi]
-hopspi.local ansible_connection=ssh ansible_python_interpreter=/usr/bin/python2 ansible_ssh_user=ansible ansible_ssh_port=2222
+#[hopspi]
+#hopspi.local ansible_connection=ssh ansible_python_interpreter=/usr/bin/python2 ansible_ssh_user=ansible ansible_ssh_port=2222
