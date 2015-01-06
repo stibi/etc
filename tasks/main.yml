@@ -1,0 +1,134 @@
+---
+
+- include_vars: "{{ ansible_distribution }}.yml"
+  tags: [emonhub]
+
+- name: Install packages needed for emonhub
+  sudo: yes
+  action: >
+    {{ ansible_pkg_mgr }}
+    name={{ item }}
+    state=present
+  with_items: emonhub_ansible_role_distro_vars.emonhub_packages
+  tags: [emonhub]
+
+- name: Create non-priviledged user to run emonhub
+  sudo: yes
+  user: >
+    name="{{ emonhub_ansible_role.emonhub_user }}"
+    createhome=yes
+    append=yes
+    groups="{{ emonhub_ansible_role_distro_vars.emonhub_user_groups | join(',') }}"
+  tags: [emonhub]
+
+- name: Check if emonhub is already installed
+  stat: >
+    path={{ emonhub_ansible_role.emonhub_installation_dir }}
+  register: emonhub_installation_check
+  tags: [emonhub]
+
+- name: Clone emonhub development branch from github
+  sudo: yes
+  when: emonhub_installation_check.stat.exists == false
+  git: >
+    repo=https://github.com/emonhub/emonhub.git
+    dest={{ emonhub_ansible_role.emonhub_repo_installation_dir }}
+    version={{ emonhub_branch | default(development) }}
+  tags: [emonhub]
+
+- name: Setup permissions of the cloned emonHub repository
+  sudo: yes
+  file: >
+    dest={{ emonhub_ansible_role.emonhub_repo_installation_dir }}
+    owner={{ emonhub_ansible_role.emonhub_user }}
+    group={{ emonhub_ansible_role.users_group }}
+    recurse=yes
+    state=directory
+  tags: [emonhub]
+
+# In the emonhub git repository cloned to the host in the previous step,
+# there is a "src/" directory with all emonhub sources.
+# The directory is symlinked to a configured location which becomes the
+# emonhub installation.
+- name: Install emonhub from the git repo with a symlink
+  sudo: yes
+  file: >
+    src={{ emonhub_ansible_role.emonhub_repo_installation_dir }}/src
+    dest={{ emonhub_ansible_role.emonhub_installation_dir }}
+    owner={{ emonhub_ansible_role.emonhub_user }}
+    group={{ emonhub_ansible_role.users_group }}
+    state=link
+  tags: [emonhub]
+
+- name: Install systemd service for emonhub
+  sudo: yes
+  template: >
+    src=emonhub.systemd.service.j2
+    dest=/usr/lib/systemd/system/emonhub.service
+    owner=root
+    group=root
+  when: ansible_distribution == "Archlinux"
+  tags: [emonhub, service]
+
+- name: Install config file with defaults for emonhub SysV init script
+  sudo: yes
+  template: >
+    src=emonhub.sysv.defaults.j2
+    dest=/etc/default/emonhub
+    owner=root
+    group=root
+  when: ansible_distribution == "Raspbian"
+  tags: [emonhub, service]
+
+- name: Install SysV service for emonhub
+  sudo: yes
+  template: >
+    src=emonhub.sysv.service.j2
+    dest=/etc/init.d/emonhub
+    owner=root
+    group=root
+  when: ansible_distribution == "Raspbian"
+  tags: [emonhub, service]
+
+# the ansible file module not used here to create the logfile
+# because with state=file for the file module, the status of the action would
+# be "changed" for every run, see doc why
+# Thanks to "creates" arg,the logfile is really created only when doesn't exist
+- name: Create logfile for emonhub
+  command: touch {{ emonhub_ansible_role.emonhub_logfile }}
+  args:
+    creates: "{{ emonhub_ansible_role.emonhub_logfile }}"
+  tags: [emonhub]
+
+- name: Setup emonhub logfile permissions
+  sudo: yes
+  file: >
+    dest={{ emonhub_ansible_role.emonhub_logfile }}
+    owner={{ emonhub_ansible_role.emonhub_user }}
+    group={{ emonhub_ansible_role.users_group }}
+    state=file
+  tags: [emonhub]
+
+- name: Create directory in /etc for emonhub configuration
+  sudo: yes
+  file: >
+    dest={{ emonhub_ansible_role.emonhub_config_path }}
+    state=directory
+  tags: [emonhub]
+
+- name: Deploy emonhub configuration file
+  sudo: yes
+  template: >
+    src=emonhub.conf.j2
+    dest={{ emonhub_ansible_role.emonhub_config_path }}/emonhub.conf
+    owner={{ emonhub_ansible_role.emonhub_user }}
+    group={{ emonhub_ansible_role.users_group }}
+  tags: [emonhub]
+
+- name: Enable and start emonhub service
+  sudo: yes
+  service: >
+    name=emonhub.service
+    enabled=yes
+    state=started
+  tags: [emonhub]

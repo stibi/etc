@@ -1,0 +1,11 @@
+---
+
+emonhub_ansible_role_distro_vars:
+  emonhub_packages:
+    - python2
+    - python2-pyserial
+    - python2-configobj
+  emonhub_user_groups:
+    - users
+    - uucp
+  python_exec_path: /usr/bin/python2

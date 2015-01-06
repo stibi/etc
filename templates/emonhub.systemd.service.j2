@@ -1,0 +1,17 @@
+[Unit]
+Description=emonhub service
+
+[Service]
+Environment="EMONHUB_LOG={{ emonhub_ansible_role.emonhub_logfile }}"
+Environment="EMONHUB_CONFIG={{ emonhub_ansible_role.emonhub_config_path }}/emonhub.conf"
+ExecStart={{ emonhub_ansible_role_distro_vars.python_exec_path }} emonhub.py --logfile $EMONHUB_LOG --config-file $EMONHUB_CONFIG
+WorkingDirectory={{ emonhub_ansible_role.emonhub_installation_dir }}
+User={{ emonhub_ansible_role.emonhub_user }}
+Group={{ emonhub_ansible_role.users_group }}
+Nice=10
+SyslogIdentifier=emonhub
+KillSignal=SIGINT
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
