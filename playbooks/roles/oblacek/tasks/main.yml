@@ -22,3 +22,5 @@
     state=present
   with_items: ssh_users
   tags: [sshkeys]
+
+- include: apache.yml

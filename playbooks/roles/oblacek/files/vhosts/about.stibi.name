@@ -1,0 +1,29 @@
+<VirtualHost about.stibi.name:80>
+    ServerAdmin martin.stiborsky@gmail.com
+    DocumentRoot "/srv/http/about.stibi.name"
+    ServerName about.stibi.name
+    ServerAlias about.stibi.name
+    ErrorLog "/var/log/httpd/about.stibi.name-error_log"
+    CustomLog "/var/log/httpd/about.stibi.name-access_log" common
+
+    <Directory "/srv/http/about.stibi.name">
+        Require all granted
+    </Directory>
+</VirtualHost>
+
+# <VirtualHost domainname1.dom:443>
+#     ServerAdmin webmaster@domainname1.dom
+#     DocumentRoot "/home/user/http/domainname1.dom"
+#     ServerName domainname1.dom:443
+#     ServerAlias domainname1.dom:443
+#     ErrorLog "/var/log/httpd/domainname1.dom-error_log"
+#     CustomLog "/var/log/httpd/domainname1.dom-access_log" common
+
+#     <Directory "/home/user/http/domainname1.dom">
+#         Require all granted
+#     </Directory>
+
+#     SSLEngine on
+#     SSLCertificateFile "/etc/httpd/conf/server.crt"
+#     SSLCertificateKeyFile "/etc/httpd/conf/server.key"
+# </VirtualHost>

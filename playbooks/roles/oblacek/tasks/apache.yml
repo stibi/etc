@@ -1,0 +1,54 @@
+---
+
+- name: Install apache
+  sudo: yes
+  pacman: >
+    name=apache
+    state=present
+  tags: [apache]
+
+- name: Create directory for vhosts
+  sudo: yes
+  file: >
+    dest=/etc/httpd/conf/vhosts
+    owner=root
+    group=root
+    state=directory
+  tags: [apache]
+
+- name: Setup vhosts config files
+  sudo: yes
+  copy: >
+    src=vhosts/{{ item }}
+    dest=/etc/httpd/conf/vhosts/{{ item }}
+    owner=root
+    group=root
+  with_items:
+    - about.stibi.name
+  tags: [apache]
+
+- name: Include vhosts to httpd.conf
+  sudo: yes
+  lineinfile: >
+    dest=/etc/httpd/conf/httpd.conf
+    insertafter="^# Virtual hosts"
+    line="Include conf/vhosts/{{ item }}"
+  with_items:
+    - about.stibi.name
+  tags: [apache]
+
+- name: Clone about.stibi.name website
+  sudo: yes
+  git: >
+    repo=https://github.com/stibi/about.stibi.name.git
+    dest=/srv/http/about.stibi.name
+    update=yes
+  tags: [apache]
+
+- name: Enable and start apache service
+  sudo: yes
+  service: >
+    name=httpd
+    state=started
+    enabled=yes
+  tags: [apache]
