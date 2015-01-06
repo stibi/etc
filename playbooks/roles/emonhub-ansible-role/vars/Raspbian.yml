@@ -1,0 +1,11 @@
+---
+
+emonhub_ansible_role_distro_vars:
+  emonhub_packages:
+    - python
+    - python-serial
+    - python-configobj
+  emonhub_user_groups:
+    - users
+    - dialout
+    - tty
