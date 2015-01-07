@@ -35,7 +35,6 @@
 #  hostname: name=malina
 
 - include: transmission.yml
-- include: nfs.yml
 - include: avahi.yml
 - include: yaourt.yml
 - include: rss2email.yml
