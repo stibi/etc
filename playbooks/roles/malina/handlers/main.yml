@@ -21,12 +21,6 @@
     name=nfs-server
     state=restarted
 
-- name: restart ntpd
-  sudo: yes
-  service: >
-    name=ntpd
-    state=restarted
-
 - name: start samba services
   sudo: yes
   service: >

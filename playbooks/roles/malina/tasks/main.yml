@@ -39,6 +39,5 @@
 - include: avahi.yml
 - include: yaourt.yml
 - include: rss2email.yml
-- include: ntp.yml
 - include: samba.yml
 - include: nodered.yml

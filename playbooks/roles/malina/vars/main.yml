@@ -1,7 +1,7 @@
 ---
 # TODO avahi se tady instaluje? Mam roli...
 # TODO nodejs je nutne? To si nainstaluje ten co to potrebuje, ne?
-packages: [ rsyslog, transmission-cli, nfs-utils, avahi, nss-mdns, fakeroot, binutils, yajl, gcc, make, ntp, samba, nodejs, wget, patch ]
+packages: [ rsyslog, transmission-cli, avahi, nss-mdns, fakeroot, binutils, yajl, gcc, make, samba, nodejs, wget, patch, mosh ]
 
 # TODO transmission do vlastni role
 transmission:
