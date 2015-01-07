@@ -30,17 +30,22 @@
     - roles/malina/vars/vault.yml
     - roles/malina/vars/main.yml
   roles:
-    - common
-    - myuser
-    - ntp-ansible-role
-    - malina
-    - ds18b20-service
-    - ssh
-    - { role: autossh, remote_forwarded_ssh_port: 4444 }
-    - { role: emoncms-ansible-role }
-    - { role: emonhub-ansible-role, rfm12pi_group: 210, rfm12pi_freq: 868,rfm12pi_baseid: 1, emonhub_emoncms_apikey: "6a272ec63787809a59e4f56bfaac4f3b" }
-    - nodered-ansible-role
-    - mosquitto-ansible-role
+    - role: common
+    - role: myuser
+    - role: ntp-ansible-role
+    - role: malina
+    - role: ds18b20-service
+    - role: ssh
+    - role: autossh
+      remote_forwarded_ssh_port: 4444
+    - role: emoncms-ansible-role
+    - role: emonhub-ansible-role
+      rfm12pi_group: 210
+      rfm12pi_freq: 868
+      rfm12pi_baseid: 1
+      emonhub_emoncms_apikey: "6a272ec63787809a59e4f56bfaac4f3b"
+    - role: nodered-ansible-role
+    - role: mosquitto-ansible-role
     - role: nfs-ansible-role
       allowed_clients: 192.168.2.0/24
       nfs_root: /srv/nfs/
