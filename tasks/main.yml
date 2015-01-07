@@ -1,0 +1,29 @@
+---
+- name: Install NTP packages
+  sudo: yes
+  action: >
+    {{ ansible_pkg_mgr }}
+    name={{ item }}
+    state=present
+  with_items: ntp_ansible_role.packages
+  tags: [ntp]
+
+- name: Setup cz.nic NTP servers
+  sudo: yes
+  lineinfile: >
+    dest=/etc/ntp.conf
+    regexp="^server {{ item }}\..*"
+    line="server {{ item }}.cz.pool.ntp.org iburst"
+    owner=root
+    group=root
+    backup=yes
+  with_sequence: start=0 end=3
+  tags: [ntp]
+
+- name: Enable and start NTP service
+  sudo: yes
+  service: >
+    name=ntpd
+    enabled=yes
+    state=started
+  tags: [ntp]
