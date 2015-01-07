@@ -1,0 +1,11 @@
+---
+- name: reload exports
+  sudo: yes
+  command: exportfs -ra
+
+- name: restart nfs
+  sudo: yes
+  service: >
+    name={{ item }}
+    state=restarted
+  with_items: nfs_ansible_role.nfs_services
