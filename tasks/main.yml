@@ -1,0 +1,55 @@
+---
+- name: Install NFS packages
+  sudo: yes
+  action: >
+    {{ ansible_pkg_mgr }}
+    name={{ item }}
+    state=present
+  with_items:
+    - nfs-utils
+  tags: [nfs]
+
+- name: Create directories for NFS exports
+  sudo: yes
+  file: >
+    path={{ item.nfs_mount }}
+    state=directory
+    owner=stibi
+    group=users
+    mode=0755
+  with_items: exports
+  tags: [nfs]
+
+- name: Mount NFS exports
+  sudo: yes
+  mount: >
+    src={{ item.device }}
+    name={{ item.nfs_mount }}
+    state=mounted
+    fstype=none
+    opts=bind
+  with_items: exports
+  tags: [nfs]
+
+# TODO ty mounty pridat do fstab
+
+- name: Setup NFS exports file
+  sudo: yes
+  template: >
+    src=exports.j2
+    dest=/etc/exports
+    owner=root
+    group=root
+  notify: [reload exports, restart nfs]
+  tags: [nfs]
+
+- name: Enable and start NFS services
+  sudo: yes
+  service: >
+    name={{ item }}
+    enabled=yes
+    state=started
+  with_items: nfs_ansible_role.nfs_services
+  tags: [nfs]
+
+  # TODO id mapping

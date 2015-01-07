@@ -1,0 +1,6 @@
+---
+nfs_ansible_role:
+  nfs_services:
+    - nfs-server
+    - rpcbind
+
